@@ -42,23 +42,8 @@
 
 <div id="toasts" class="fixed top-4 right-4 z-[100] space-y-2 w-[min(92vw,22rem)]"></div>
 
-<!-- ================= SETUP SUPABASE (satu kali saja) ================= -->
-<div id="screen-setup" class="hidden min-h-screen grid place-items-center bg-gradient-to-br from-[#0f2b46] via-[#12365a] to-[#0e4d6e] p-4">
-  <div class="card w-full max-w-md p-7 fade">
-    <div class="grid place-items-center mb-4"><div class="h-14 w-14 rounded-2xl bg-cyan-500 grid place-items-center text-white shadow-lg shadow-cyan-500/30" id="ico-setup"></div></div>
-    <h1 class="text-xl font-bold text-center">Selamat Datang di MediKlinik</h1>
-    <p class="text-xs text-slate-500 text-center mt-1 mb-5">Langkah pertama: hubungkan ke database Supabase Anda.<br><b>Konfigurasi ini hanya disimpan di browser ini.</b></p>
-    <label class="lbl">Supabase URL</label>
-    <input id="cfg-url" class="inp mb-3" placeholder="https://jnbtgryfrrvpxpfujwuo.supabase.co">
-    <label class="lbl">Anon / Public Key</label>
-    <input id="cfg-key" class="inp mb-5" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuYnRncnlmcnJ2cHhwZnVqd3VvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5MDY0OTcsImV4cCI6MjEwNzQ4MjQ5N30.8Gx4t5YG9Cnp_yOpyKhET-CgyhUzVC44AYQ39pnJxUU">
-    <button class="btn btn-p w-full" onclick="saveCfg()">💾 Simpan &amp; Mulai Aplikasi</button>
-    <p class="text-[11px] text-slate-400 text-center mt-4">💡 Dapatkan URL &amp; Key di: Supabase Dashboard → Settings → API</p>
-  </div>
-</div>
-
 <!-- ================= APP ================= -->
-<div id="app" class="hidden">
+<div id="app" class="hidden min-h-screen flex flex-col">
   <div id="backdrop" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden" onclick="closeSide()"></div>
 
   <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 -translate-x-full lg:translate-x-0 transition-transform duration-200 bg-gradient-to-b from-[#0f2b46] to-[#12365a] text-white flex flex-col">
@@ -68,7 +53,7 @@
     </div>
     <nav id="nav" class="flex-1 space-y-1 px-3 py-4"></nav>
     <div class="border-t border-white/10 p-3">
-      <button class="nav-btn hover:!bg-amber-500/10 hover:!text-amber-300" onclick="resetCfg()"><span id="ico-reset"></span> Ubah Koneksi DB</button>
+      <div class="px-4 py-2 text-[10px] text-slate-400 text-center">v1.0 · Single User Mode</div>
     </div>
   </aside>
 
@@ -85,7 +70,6 @@
     </header>
 
     <main class="flex-1 p-4 sm:p-6">
-
       <!-- ===== DASHBOARD ===== -->
       <section id="page-dashboard" class="page active space-y-5">
         <div id="stat-grid" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"></div>
@@ -165,7 +149,6 @@
         <div class="grid sm:grid-cols-3 gap-4" id="riv-stat"></div>
         <div id="riv-list" class="space-y-3"></div>
       </section>
-
     </main>
   </div>
 </div>
@@ -202,6 +185,11 @@
 </div></div>
 
 <script>
+/* ================= KONFIGURASI DATABASE (HARDCODED) ================= */
+// Jika Anda membuat project Supabase baru, ganti 2 nilai di bawah ini:
+const SUPABASE_URL = 'https://jnbtgryfrrvpxpfujwuo.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuYnRncnlmcnJ2cHhwZnVqd3VvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5MDY0OTcsImV4cCI6MjEwNzQ4MjQ5N30.8Gx4t5YG9Cnp_yOpyKhET-CgyhUzVC44AYQ39pnJxUU';
+
 /* ================= UTIL ================= */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const V=id=>(document.getElementById(id)?.value??'').trim();
@@ -214,14 +202,13 @@ function toast(m,t='ok'){const e=document.createElement('div');e.className=`fade
 const P={pill:'M10.5 13.5l3-3m-6.36 6.36a5 5 0 017.07-7.07l3.54 3.54a5 5 0 01-7.07 7.07l-3.54-3.54z',
 home:'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10',box:'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8',
 cart:'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 4.5a1 1 0 00.9 1.5H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
-clock:'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',out:'M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1',
+clock:'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
 bell:'M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9',
 menu:'M4 6h16M4 12h16M4 18h16',plus:'M12 4v16m8-8H4',trend:'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
 warn:'M12 9v2m0 4h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z',
 cash:'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z',
 trash:'M19 7l-.9 12.1A2 2 0 0116 21H8a2 2 0 01-2-1.9L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16',
-edit:'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.4-9.4a2 2 0 112.8 2.8L11 15l-4 1 1-4 9.6-9.6z',
-reset:'M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0114.65-3.36L20 7M20 15a9 9 0 01-14.65 3.36L4 17'};
+edit:'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.4-9.4a2 2 0 112.8 2.8L11 15l-4 1 1-4 9.6-9.6z'};
 const ic=(k,c='h-5 w-5')=>`<svg class="${c}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="${P[k]}"/></svg>`;
 
 /* ================= STATE & DB ================= */
@@ -232,15 +219,9 @@ const NAV=[{k:'dashboard',t:'Dashboard',s:'Ringkasan klinik bulan ini',i:'home'}
 {k:'kasir',t:'Kasir / Pengeluaran',s:'Catat obat untuk pasien',i:'cart'},
 {k:'riwayat',t:'Riwayat Transaksi',s:'Arsip penggunaan obat',i:'clock'}];
 
-const cfgGet=()=>{try{return JSON.parse(localStorage.getItem('mk_cfg')||'{}')}catch(e){return{}}};
-const cfgSet=c=>localStorage.setItem('mk_cfg',JSON.stringify(c));
-function saveCfg(){const url=V('cfg-url'),key=V('cfg-key');if(!url||!key)return toast('URL & Key wajib diisi','error');cfgSet({url,key});location.reload()}
-function resetCfg(){if(!confirm('Hapus konfigurasi koneksi database? Anda perlu mengisi ulang URL & Key.'))return;localStorage.removeItem('mk_cfg');location.reload()}
-
 async function boot(){
   // Setup icons
-  $('#ico-setup').innerHTML=ic('pill','h-7 w-7');
-  $('#ico-side').innerHTML=ic('pill','h-6 w-6');$('#ico-reset').innerHTML=ic('reset','h-5 w-5');
+  $('#ico-side').innerHTML=ic('pill','h-6 w-6');
   $('#ico-menu').innerHTML=ic('menu');$('#ico-bell').insertAdjacentHTML('afterbegin',ic('bell'));
   $('#ico-plus1').innerHTML=ic('plus','h-4 w-4');$('#ico-plus2').innerHTML=ic('plus','h-4 w-4');
   $('#t-top').innerHTML=ic('trend','h-5 w-5 text-cyan-600')+'Top 5 Obat Terlaris';
@@ -248,26 +229,23 @@ async function boot(){
   $('#t-keranjang').innerHTML=ic('cart','h-4 w-4 text-cyan-600')+'Keranjang Obat';
   $('#nav').innerHTML=NAV.map(n=>`<button class="nav-btn" data-k="${n.k}" onclick="go('${n.k}')">${ic(n.i,'h-5 w-5')}${n.t}</button>`).join('');
 
-  // Cek konfigurasi
-  const c=cfgGet();
-  if(!c.url||!c.key) return $('#screen-setup').classList.remove('hidden');
-
-  // Inisialisasi Supabase (tanpa auth)
-  db=supabase.createClient(c.url,c.key);
+  // Inisialisasi Supabase langsung (tanpa layar setup)
+  db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   // Test koneksi
-  const {error}=await db.from('medicines').select('id').limit(1);
+  const {error} = await db.from('medicines').select('id').limit(1);
   if(error){
-    toast('Koneksi gagal: '+error.message,'error');
-    localStorage.removeItem('mk_cfg');
-    return $('#screen-setup').classList.remove('hidden');
+    toast('Koneksi database gagal: '+error.message,'error');
+    document.body.innerHTML = `<div class="min-h-screen grid place-items-center p-4"><div class="text-center"><h1 class="text-xl font-bold text-red-600 mb-2">Koneksi Gagal</h1><p class="text-sm text-slate-600 mb-4">${error.message}</p><p class="text-xs text-slate-400">Pastikan SQL Schema sudah dijalankan di Supabase.</p></div></div>`;
+    return;
   }
 
   // Masuk ke aplikasi
-  $('#screen-setup').classList.add('hidden');
-  $('#app').classList.remove('hidden');$('#app').classList.add('block');
+  $('#app').classList.remove('hidden');
+  $('#app').classList.add('block');
   await loadMeds();
-  location.hash='#/dashboard';route();
+  location.hash='#/dashboard';
+  route();
 }
 
 /* ================= ROUTING ================= */
@@ -443,6 +421,7 @@ async function renderRiwayat(){
   </div>`).join(''):'<p class="text-center text-slate-400 py-10">Belum ada transaksi.</p>';
 }
 
+// Jalankan aplikasi
 boot();
 </script>
 </body>
