@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MediKlinik · Manajemen Obat & Klinik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  html{font-family:Inter,system-ui,sans-serif}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
+  .card{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;box-shadow:0 1px 3px rgba(15,43,70,.07)}
+  .inp{width:100%;border:1px solid #e2e8f0;border-radius:.6rem;padding:.6rem .8rem;font-size:.875rem;background:#fff;outline:none;transition:.15s}
+  .inp:focus{border-color:#0891b2;box-shadow:0 0 0 3px rgba(8,145,178,.15)}
+  .lbl{display:block;font-size:.72rem;font-weight:700;color:#475569;margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.03em}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:.65rem;font-weight:600;font-size:.875rem;padding:.6rem 1rem;transition:.15s;cursor:pointer;border:none}
+  .btn-p{background:#0f2b46;color:#fff}.btn-p:hover{background:#153352}
+  .btn-c{background:#0891b2;color:#fff}.btn-c:hover{background:#0e7490}
+  .btn-g{background:#059669;color:#fff}.btn-g:hover{background:#047857}
+  .btn-o{background:#f1f5f9;color:#334155}.btn-o:hover{background:#e2e8f0}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .badge{display:inline-flex;align-items:center;border-radius:99px;padding:.18rem .6rem;font-size:.7rem;font-weight:700}
+  .fade{animation:fade .28s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .page{display:none}.page.active{display:block}
+  .nav-btn{display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;border-radius:.7rem;font-size:.875rem;font-weight:500;color:#cbd5e1;transition:.15s;width:100%;text-align:left}
+  .nav-btn:hover{background:rgba(255,255,255,.07);color:#fff}
+  .nav-btn.active{background:rgba(6,182,212,.20);color:#67e8f9;box-shadow:inset 3px 0 0 #22d3ee}
+  table.tbl{width:100%;border-collapse:collapse;font-size:.875rem}
+  .tbl th{background:#f8fafc;text-align:left;padding:.7rem 1rem;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:#64748b;font-weight:800}
+  .tbl td{padding:.75rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
+  .tbl tr:hover td{background:#f8fafc}
+  .modal-bg{position:fixed;inset:0;background:rgba(8,25,43,.55);backdrop-filter:blur(3px);z-index:60;display:none;align-items:center;justify-content:center;padding:1rem}
+  .modal-bg.open{display:flex}
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+<div id="toasts" class="fixed top-4 right-4 z-[100] space-y-2 w-[min(92vw,22rem)]"></div>
+
+<!-- ================= SETUP SUPABASE (satu kali saja) ================= -->
+<div id="screen-setup" class="hidden min-h-screen grid place-items-center bg-gradient-to-br from-[#0f2b46] via-[#12365a] to-[#0e4d6e] p-4">
+  <div class="card w-full max-w-md p-7 fade">
+    <div class="grid place-items-center mb-4"><div class="h-14 w-14 rounded-2xl bg-cyan-500 grid place-items-center text-white shadow-lg shadow-cyan-500/30" id="ico-setup"></div></div>
+    <h1 class="text-xl font-bold text-center">Selamat Datang di MediKlinik</h1>
+    <p class="text-xs text-slate-500 text-center mt-1 mb-5">Langkah pertama: hubungkan ke database Supabase Anda.<br><b>Konfigurasi ini hanya disimpan di browser ini.</b></p>
+    <label class="lbl">Supabase URL</label>
+    <input id="cfg-url" class="inp mb-3" placeholder="https://xxxx.supabase.co">
+    <label class="lbl">Anon / Public Key</label>
+    <input id="cfg-key" class="inp mb-5" placeholder="eyJhbGciOi...">
+    <button class="btn btn-p w-full" onclick="saveCfg()">💾 Simpan &amp; Mulai Aplikasi</button>
+    <p class="text-[11px] text-slate-400 text-center mt-4">💡 Dapatkan URL &amp; Key di: Supabase Dashboard → Settings → API</p>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" class="hidden">
+  <div id="backdrop" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden" onclick="closeSide()"></div>
+
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 -translate-x-full lg:translate-x-0 transition-transform duration-200 bg-gradient-to-b from-[#0f2b46] to-[#12365a] text-white flex flex-col">
+    <div class="flex items-center gap-3 border-b border-white/10 px-5 py-5">
+      <div class="h-10 w-10 rounded-xl bg-cyan-400 grid place-items-center" id="ico-side"></div>
+      <div><h1 class="font-extrabold leading-tight">MediKlinik</h1><p class="text-[11px] text-cyan-200">Manajemen Obat</p></div>
+    </div>
+    <nav id="nav" class="flex-1 space-y-1 px-3 py-4"></nav>
+    <div class="border-t border-white/10 p-3">
+      <button class="nav-btn hover:!bg-amber-500/10 hover:!text-amber-300" onclick="resetCfg()"><span id="ico-reset"></span> Ubah Koneksi DB</button>
+    </div>
+  </aside>
+
+  <div class="lg:pl-64 min-h-screen flex flex-col">
+    <header class="sticky top-0 z-30 h-16 bg-white/90 backdrop-blur border-b border-slate-200 flex items-center justify-between px-4 sm:px-6">
+      <div class="flex items-center gap-3">
+        <button class="lg:hidden p-2 rounded-lg hover:bg-slate-100" onclick="toggleSide()" id="ico-menu"></button>
+        <div><h2 id="page-title" class="font-bold text-slate-800 leading-tight">Dashboard</h2><p id="page-sub" class="text-[11px] text-slate-500"></p></div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative p-2 rounded-full hover:bg-slate-100" id="ico-bell"><span id="bell-dot" class="hidden absolute right-1.5 top-1.5 h-2 w-2 bg-red-500 rounded-full"></span></button>
+        <div class="hidden sm:block text-right"><p class="text-sm font-semibold leading-tight">Klinik Sehat</p><p class="text-[10px] text-slate-500">Sistem Manajemen Obat</p></div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 sm:p-6">
+
+      <!-- ===== DASHBOARD ===== -->
+      <section id="page-dashboard" class="page active space-y-5">
+        <div id="stat-grid" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"></div>
+        <div class="grid gap-5 xl:grid-cols-2">
+          <div class="card p-5">
+            <h3 class="font-bold flex items-center gap-2" id="t-top"></h3>
+            <p class="text-xs text-slate-500 mb-4">Obat paling sering digunakan bulan ini</p>
+            <div style="height:210px"><canvas id="chart-top"></canvas></div>
+            <div id="top-list" class="mt-4 space-y-2"></div>
+          </div>
+          <div class="card p-5">
+            <h3 class="font-bold flex items-center gap-2" id="t-stok"></h3>
+            <p class="text-xs text-slate-500 mb-4">Obat dengan stok di bawah batas minimal</p>
+            <div id="stok-alert" class="space-y-2"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== INVENTARIS ===== -->
+      <section id="page-inventaris" class="page space-y-4">
+        <div class="flex flex-wrap gap-3 items-center justify-between">
+          <input id="search-obat" class="inp sm:max-w-xs" placeholder="🔍  Cari nama obat..." oninput="renderInventaris()">
+          <button class="btn btn-p" onclick="openObat()"><span id="ico-plus1"></span> Tambah Obat</button>
+        </div>
+        <div class="card overflow-hidden overflow-x-auto">
+          <table class="tbl"><thead><tr>
+            <th>Nama Obat</th><th>Kategori</th><th class="text-center">Kotak</th>
+            <th class="text-center">Total Satuan</th><th class="text-right">Harga Jual</th>
+            <th class="text-center">Status</th><th class="text-right">Aksi</th>
+          </tr></thead><tbody id="tbody-obat"></tbody></table>
+        </div>
+      </section>
+
+      <!-- ===== KASIR ===== -->
+      <section id="page-kasir" class="page">
+        <div class="grid gap-5 lg:grid-cols-3">
+          <div class="lg:col-span-2 space-y-5">
+            <div class="card p-5">
+              <h3 class="font-bold mb-3">Data Pasien</h3>
+              <div class="grid sm:grid-cols-2 gap-3">
+                <div><label class="lbl">Nama Pasien</label><input id="p_nama" class="inp" placeholder="Tn. Budi"></div>
+                <div><label class="lbl">Catatan / Diagnosa</label><input id="p_catat" class="inp" placeholder="Rawat jalan"></div>
+              </div>
+            </div>
+            <div class="card p-5">
+              <h3 class="font-bold mb-3">Tambah Obat</h3>
+              <input id="search-kasir" class="inp mb-3" placeholder="🔍  Cari obat untuk memfilter daftar..." oninput="fillSelect()">
+              <div class="grid sm:grid-cols-[1fr_auto_auto] gap-3 items-end">
+                <div><label class="lbl">Pilih Obat</label><select id="sel-obat" class="inp"></select></div>
+                <div><label class="lbl">Jumlah (satuan)</label><input id="in-jml" type="number" min="1" value="1" class="inp sm:w-28"></div>
+                <button class="btn btn-c" onclick="addToCart()"><span id="ico-plus2"></span> Tambah</button>
+              </div>
+            </div>
+            <div class="card p-5">
+              <h3 class="font-bold mb-3 flex items-center gap-2" id="t-keranjang"></h3>
+              <div id="keranjang"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card sticky top-20 overflow-hidden">
+              <div class="bg-gradient-to-r from-[#0f2b46] to-[#1a5276] text-white px-5 py-4"><h3 class="font-bold">Ringkasan Transaksi</h3></div>
+              <div class="p-5 space-y-4">
+                <div id="ringkasan" class="space-y-2 text-sm"></div>
+                <div class="border-t pt-3 flex items-center justify-between">
+                  <span class="font-bold text-slate-700">TOTAL</span>
+                  <span id="total-harga" class="text-xl font-extrabold text-[#0891b2]">Rp0</span>
+                </div>
+                <button id="btn-checkout" class="btn btn-g w-full py-3" onclick="checkout()">✔ Proses Transaksi</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== RIWAYAT ===== -->
+      <section id="page-riwayat" class="page space-y-4">
+        <div class="grid sm:grid-cols-3 gap-4" id="riv-stat"></div>
+        <div id="riv-list" class="space-y-3"></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===== MODAL OBAT ===== -->
+<div id="modal-obat" class="modal-bg"><div class="card w-full max-w-lg p-6 fade max-h-[92vh] overflow-y-auto">
+  <h3 id="mo-title" class="font-bold text-lg">Tambah Obat Baru</h3>
+  <p class="text-xs text-slate-500 mb-4">Data harga &amp; stok akan dihitung otomatis oleh database.</p>
+  <div class="grid gap-3">
+    <div><label class="lbl">Nama Obat</label><input id="f_nama" class="inp" placeholder="Paracetamol 500mg"></div>
+    <div><label class="lbl">Kategori</label><input id="f_kategori" class="inp" placeholder="Analgesik"></div>
+    <div class="grid grid-cols-3 gap-3">
+      <div><label class="lbl">Stok (Kotak)</label><input id="f_kotak" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
+      <div><label class="lbl">Eceran</label><input id="f_sisa" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
+      <div><label class="lbl">Isi / Kotak</label><input id="f_isi" type="number" min="1" value="100" class="inp" oninput="calcInfo()"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="lbl">Harga Beli / Kotak</label><input id="f_beli" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
+      <div><label class="lbl">Harga Jual / Satuan</label><input id="f_jual" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
+    </div>
+    <div><label class="lbl">Batas Stok Minimal (satuan)</label><input id="f_min" type="number" min="1" value="20" class="inp"></div>
+    <div id="info-calc" class="rounded-xl bg-sky-50 border border-sky-100 p-3 text-[13px] text-sky-800 space-y-1"></div>
+  </div>
+  <div class="flex justify-end gap-2 mt-5"><button class="btn btn-o" onclick="closeObat()">Batal</button><button class="btn btn-p" onclick="saveObat()">Simpan</button></div>
+</div></div>
+
+<!-- ===== MODAL STRUK ===== -->
+<div id="modal-struk" class="modal-bg"><div class="card w-full max-w-sm p-6 fade">
+  <div class="text-center mb-4"><div class="mx-auto h-12 w-12 rounded-full bg-emerald-100 grid place-items-center text-emerald-600 text-xl">✔</div>
+  <h3 class="font-bold mt-2">Transaksi Berhasil</h3><p class="text-xs text-slate-500">Stok obat telah diperbarui otomatis.</p></div>
+  <div id="struk-body" class="text-sm space-y-1 border-y py-3"></div>
+  <div class="flex justify-between font-bold mt-3"><span>Total</span><span id="struk-total" class="text-[#0891b2]"></span></div>
+  <button class="btn btn-p w-full mt-5" onclick="closeStruk()">Tutup</button>
+</div></div>
+
+<script>
+/* ================= UTIL ================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const V=id=>(document.getElementById(id)?.value??'').trim();
+const N=id=>parseFloat(document.getElementById(id)?.value)||0;
+const money=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0);
+const BL=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const fd=d=>new Date(d).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+const ft=d=>new Date(d).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+function toast(m,t='ok'){const e=document.createElement('div');e.className=`fade rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-xl ${t==='error'?'bg-red-600':t==='warn'?'bg-amber-500':'bg-emerald-600'}`;e.textContent=m;$('#toasts').appendChild(e);setTimeout(()=>{e.style.transition='.3s';e.style.opacity=0;setTimeout(()=>e.remove(),300)},2800)}
+const P={pill:'M10.5 13.5l3-3m-6.36 6.36a5 5 0 017.07-7.07l3.54 3.54a5 5 0 01-7.07 7.07l-3.54-3.54z',
+home:'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10',box:'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8',
+cart:'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 4.5a1 1 0 00.9 1.5H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
+clock:'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',out:'M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1',
+bell:'M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9',
+menu:'M4 6h16M4 12h16M4 18h16',plus:'M12 4v16m8-8H4',trend:'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
+warn:'M12 9v2m0 4h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z',
+cash:'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z',
+trash:'M19 7l-.9 12.1A2 2 0 0116 21H8a2 2 0 01-2-1.9L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16',
+edit:'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.4-9.4a2 2 0 112.8 2.8L11 15l-4 1 1-4 9.6-9.6z',
+reset:'M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0114.65-3.36L20 7M20 15a9 9 0 01-14.65 3.36L4 17'};
+const ic=(k,c='h-5 w-5')=>`<svg class="${c}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="${P[k]}"/></svg>`;
+
+/* ================= STATE & DB ================= */
+let db=null;
+const S={meds:[],cart:[],edit:null,chart:null};
+const NAV=[{k:'dashboard',t:'Dashboard',s:'Ringkasan klinik bulan ini',i:'home'},
+{k:'inventaris',t:'Inventaris Obat',s:'Kelola data & stok obat',i:'box'},
+{k:'kasir',t:'Kasir / Pengeluaran',s:'Catat obat untuk pasien',i:'cart'},
+{k:'riwayat',t:'Riwayat Transaksi',s:'Arsip penggunaan obat',i:'clock'}];
+
+const cfgGet=()=>{try{return JSON.parse(localStorage.getItem('mk_cfg')||'{}')}catch(e){return{}}};
+const cfgSet=c=>localStorage.setItem('mk_cfg',JSON.stringify(c));
+function saveCfg(){const url=V('cfg-url'),key=V('cfg-key');if(!url||!key)return toast('URL & Key wajib diisi','error');cfgSet({url,key});location.reload()}
+function resetCfg(){if(!confirm('Hapus konfigurasi koneksi database? Anda perlu mengisi ulang URL & Key.'))return;localStorage.removeItem('mk_cfg');location.reload()}
+
+async function boot(){
+  // Setup icons
+  $('#ico-setup').innerHTML=ic('pill','h-7 w-7');
+  $('#ico-side').innerHTML=ic('pill','h-6 w-6');$('#ico-reset').innerHTML=ic('reset','h-5 w-5');
+  $('#ico-menu').innerHTML=ic('menu');$('#ico-bell').insertAdjacentHTML('afterbegin',ic('bell'));
+  $('#ico-plus1').innerHTML=ic('plus','h-4 w-4');$('#ico-plus2').innerHTML=ic('plus','h-4 w-4');
+  $('#t-top').innerHTML=ic('trend','h-5 w-5 text-cyan-600')+'Top 5 Obat Terlaris';
+  $('#t-stok').innerHTML=ic('warn','h-5 w-5 text-amber-500')+'Peringatan Stok Menipis';
+  $('#t-keranjang').innerHTML=ic('cart','h-4 w-4 text-cyan-600')+'Keranjang Obat';
+  $('#nav').innerHTML=NAV.map(n=>`<button class="nav-btn" data-k="${n.k}" onclick="go('${n.k}')">${ic(n.i,'h-5 w-5')}${n.t}</button>`).join('');
+
+  // Cek konfigurasi
+  const c=cfgGet();
+  if(!c.url||!c.key) return $('#screen-setup').classList.remove('hidden');
+
+  // Inisialisasi Supabase (tanpa auth)
+  db=supabase.createClient(c.url,c.key);
+
+  // Test koneksi
+  const {error}=await db.from('medicines').select('id').limit(1);
+  if(error){
+    toast('Koneksi gagal: '+error.message,'error');
+    localStorage.removeItem('mk_cfg');
+    return $('#screen-setup').classList.remove('hidden');
+  }
+
+  // Masuk ke aplikasi
+  $('#screen-setup').classList.add('hidden');
+  $('#app').classList.remove('hidden');$('#app').classList.add('block');
+  await loadMeds();
+  location.hash='#/dashboard';route();
+}
+
+/* ================= ROUTING ================= */
+function go(k){location.hash='#/'+k}
+function toggleSide(){$('#sidebar').classList.toggle('-translate-x-full');$('#backdrop').classList.toggle('hidden')}
+function closeSide(){$('#sidebar').classList.add('-translate-x-full');$('#backdrop').classList.add('hidden')}
+async function route(){
+  const k=(location.hash.replace('#/','')||'dashboard');
+  const it=NAV.find(n=>n.k===k)||NAV[0];
+  $$('.page').forEach(p=>p.classList.remove('active'));
+  $('#page-'+it.k)?.classList.add('active');
+  $$('#nav .nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.k===it.k));
+  $('#page-title').textContent=it.t;$('#page-sub').textContent=it.s;closeSide();
+  if(it.k==='dashboard')await renderDashboard();
+  if(it.k==='inventaris')renderInventaris();
+  if(it.k==='kasir')renderKasir();
+  if(it.k==='riwayat')await renderRiwayat();
+}
+addEventListener('hashchange',route);
+
+/* ================= DATA ================= */
+async function loadMeds(){
+  const {data,error}=await db.from('medicines').select('*').order('nama_obat');
+  if(error)return toast(error.message,'error');
+  S.meds=data||[];
+}
+
+/* ================= DASHBOARD ================= */
+async function renderDashboard(){
+  const now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),1);
+  const [a,b]=await Promise.all([
+    db.from('transactions').select('total_harga').gte('tanggal_transaksi',start.toISOString()),
+    db.from('transaction_items').select('medicine_id,jumlah_satuan,subtotal,medicines:medicine_id(nama_obat)').gte('created_at',start.toISOString())
+  ]);
+  const omset=(a.data||[]).reduce((s,r)=>s+Number(r.total_harga),0);
+  const jml=(a.data||[]).length;
+  const map=new Map();
+  (b.data||[]).forEach(r=>{const e=map.get(r.medicine_id)||{nama:r.medicines?.nama_obat||'-',j:0,p:0};e.j+=r.jumlah_satuan;e.p+=Number(r.subtotal);map.set(r.medicine_id,e)});
+  const top=[...map.entries()].map(([id,v])=>({id,...v})).sort((x,y)=>y.j-x.j).slice(0,5);
+  const tipis=S.meds.filter(m=>m.total_stok_satuan<=m.stok_minimal).sort((x,y)=>x.total_stok_satuan-y.total_stok_satuan);
+  $('#bell-dot').classList.toggle('hidden',tipis.length===0);
+
+  const card=(icn,ttl,val,sub,bg,fg)=>`<div class="card p-5 ${bg}"><div class="flex items-start justify-between"><div><p class="text-[11px] font-bold uppercase tracking-wide ${fg} opacity-80">${ttl}</p><p class="text-2xl font-extrabold mt-1 ${fg}">${val}</p><p class="text-[11px] mt-1 ${fg} opacity-70">${sub}</p></div><span class="${fg} opacity-70">${ic(icn,'h-6 w-6')}</span></div></div>`;
+  $('#stat-grid').innerHTML=
+    card('cash','Omset Bulan Ini',money(omset),jml+' transaksi','!bg-gradient-to-br !from-[#0f2b46] !to-[#1a5276] !border-0','!text-white')+
+    card('cart','Jumlah Transaksi',jml,'bulan '+BL[now.getMonth()],'','')+
+    card('pill','Jenis Obat',S.meds.length,'terdaftar di inventaris','','')+
+    card('warn','Stok Menipis',tipis.length,'perlu segera restock','','');
+
+  if(S.chart)S.chart.destroy();
+  S.chart=new Chart($('#chart-top'),{type:'bar',data:{labels:top.map(t=>t.nama),datasets:[{data:top.map(t=>t.j),backgroundColor:'#0891b2',borderRadius:6}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#f1f5f9'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+  $('#top-list').innerHTML=top.length?top.map((t,i)=>`<div class="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
+    <div class="flex items-center gap-2"><span class="badge bg-slate-200 text-slate-700">#${i+1}</span><span class="text-sm font-semibold">${t.nama}</span></div>
+    <div class="text-right"><p class="text-sm font-bold text-[#0f2b46]">${t.j} satuan</p><p class="text-[11px] text-slate-500">${money(t.p)}</p></div></div>`).join('')
+    :'<p class="text-sm text-slate-400 text-center py-6">Belum ada transaksi bulan ini.</p>';
+
+  $('#stok-alert').innerHTML=tipis.length?tipis.map(m=>`<div class="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+    <div><p class="text-sm font-bold">${m.nama_obat}</p><p class="text-[11px] text-slate-500">Batas minimal: ${m.stok_minimal} satuan</p></div>
+    <span class="badge bg-amber-500 text-white">Sisa ${m.total_stok_satuan}</span></div>`).join('')
+    :'<div class="text-center py-10 text-slate-400"><p class="text-3xl mb-1">✓</p><p class="text-sm">Semua stok aman</p></div>';
+}
+
+/* ================= INVENTARIS ================= */
+function renderInventaris(){
+  const q=V('search-obat').toLowerCase();
+  const rows=S.meds.filter(m=>m.nama_obat.toLowerCase().includes(q));
+  $('#tbody-obat').innerHTML=rows.length?rows.map(m=>{
+    const low=m.total_stok_satuan<=m.stok_minimal;
+    return `<tr><td><p class="font-semibold">${m.nama_obat}</p><p class="text-[11px] text-slate-400">Beli ${money(m.harga_beli_per_kotak)}/kotak</p></td>
+    <td><span class="badge bg-slate-100 text-slate-600">${m.kategori||'-'}</span></td>
+    <td class="text-center">${m.stok_kotak}${m.sisa_satuan?` <span class="text-[11px] text-slate-400">+${m.sisa_satuan}</span>`:''}</td>
+    <td class="text-center font-bold">${m.total_stok_satuan}</td>
+    <td class="text-right font-semibold text-[#0f2b46]">${money(m.harga_jual_per_satuan)}</td>
+    <td class="text-center">${low?'<span class="badge bg-red-100 text-red-700">Menipis</span>':'<span class="badge bg-emerald-100 text-emerald-700">Aman</span>'}</td>
+    <td><div class="flex justify-end gap-1"><button class="p-2 rounded-lg hover:bg-slate-100 text-blue-600" onclick="openObat('${m.id}')">${ic('edit','h-4 w-4')}</button>
+    <button class="p-2 rounded-lg hover:bg-red-50 text-red-500" onclick="delObat('${m.id}')">${ic('trash','h-4 w-4')}</button></div></td></tr>`}).join('')
+    :`<tr><td colspan="7" class="text-center py-12 text-slate-400">Belum ada obat. Klik "Tambah Obat".</td></tr>`;
+}
+function openObat(id){
+  S.edit=id?S.meds.find(m=>m.id===id):null;
+  $('#mo-title').textContent=S.edit?'Edit Obat':'Tambah Obat Baru';
+  const m=S.edit||{nama_obat:'',kategori:'',stok_kotak:0,sisa_satuan:0,isi_per_kotak:100,harga_beli_per_kotak:0,harga_jual_per_satuan:0,stok_minimal:20};
+  ['nama','kategori'].forEach(k=>$('#f_'+k).value=m[k==='nama'?'nama_obat':'kategori']||'');
+  $('#f_kotak').value=m.stok_kotak;$('#f_sisa').value=m.sisa_satuan;$('#f_isi').value=m.isi_per_kotak;
+  $('#f_beli').value=m.harga_beli_per_kotak;$('#f_jual').value=m.harga_jual_per_satuan;$('#f_min').value=m.stok_minimal;
+  calcInfo();$('#modal-obat').classList.add('open');
+}
+function closeObat(){$('#modal-obat').classList.remove('open')}
+function calcInfo(){
+  const isi=N('f_isi')||1,beli=N('f_beli'),jual=N('f_jual'),tot=N('f_kotak')*isi+N('f_sisa');
+  const modal=beli/isi;
+  $('#info-calc').innerHTML=`💡 Modal per satuan: <b>${money(modal)}</b><br>📦 Total stok satuan: <b>${tot} butir</b><br>📈 Margin per satuan: <b>${money(jual-modal)}</b>`;
+}
+async function saveObat(){
+  if(!V('f_nama'))return toast('Nama obat wajib diisi','error');
+  const p={nama_obat:V('f_nama'),kategori:V('f_kategori')||null,stok_kotak:N('f_kotak'),sisa_satuan:N('f_sisa'),
+  isi_per_kotak:N('f_isi')||1,harga_beli_per_kotak:N('f_beli'),harga_jual_per_satuan:N('f_jual'),stok_minimal:N('f_min')||10};
+  const q=S.edit?db.from('medicines').update(p).eq('id',S.edit.id):db.from('medicines').insert([p]);
+  const {error}=await q; if(error)return toast(error.message,'error');
+  toast(S.edit?'Obat diperbarui':'Obat ditambahkan');closeObat();await loadMeds();renderInventaris();
+}
+async function delObat(id){
+  if(!confirm('Hapus obat ini?'))return;
+  const {error}=await db.from('medicines').delete().eq('id',id);
+  if(error)return toast('Gagal: obat mungkin sudah dipakai transaksi','error');
+  toast('Obat dihapus');await loadMeds();renderInventaris();
+}
+
+/* ================= KASIR ================= */
+function fillSelect(){
+  const q=V('search-kasir').toLowerCase();
+  const ok=S.meds.filter(m=>m.total_stok_satuan>0&&m.nama_obat.toLowerCase().includes(q));
+  $('#sel-obat').innerHTML=ok.length?ok.map(m=>`<option value="${m.id}">${m.nama_obat} — stok ${m.total_stok_satuan} (${money(m.harga_jual_per_satuan)}/sat.)</option>`).join('')
+  :'<option value="">— tidak ada obat —</option>';
+}
+function renderKasir(){
+  fillSelect();
+  $('#keranjang').innerHTML=S.cart.length?`<table class="tbl"><thead><tr><th>Obat</th><th class="text-center">Harga/Sat</th><th class="text-center">Jumlah</th><th class="text-right">Subtotal</th><th></th></tr></thead><tbody>${
+    S.cart.map(c=>`<tr><td><p class="font-semibold">${c.med.nama_obat}</p><p class="text-[11px] text-slate-400">Stok: ${c.med.total_stok_satuan}</p></td>
+    <td class="text-center">${money(c.med.harga_jual_per_satuan)}</td>
+    <td><div class="flex items-center justify-center gap-1"><button class="btn btn-o !p-1.5" onclick="chQty('${c.med.id}',-1)">−</button><span class="w-8 text-center font-bold">${c.qty}</span><button class="btn btn-o !p-1.5" onclick="chQty('${c.med.id}',1)">+</button></div></td>
+    <td class="text-right font-bold">${money(c.med.harga_jual_per_satuan*c.qty)}</td>
+    <td><button class="p-2 rounded-lg hover:bg-red-50 text-red-500" onclick="rmItem('${c.med.id}')">${ic('trash','h-4 w-4')}</button></td></tr>`).join('')}</tbody></table>`
+    :'<p class="text-sm text-slate-400 text-center py-8">Keranjang masih kosong.</p>';
+  const tot=S.cart.reduce((s,c)=>s+c.med.harga_jual_per_satuan*c.qty,0);
+  $('#ringkasan').innerHTML=S.cart.map(c=>`<div class="flex justify-between text-slate-600"><span class="truncate max-w-[150px]">${c.med.nama_obat} × ${c.qty}</span><b>${money(c.med.harga_jual_per_satuan*c.qty)}</b></div>`).join('')||'<p class="text-slate-400">—</p>';
+  $('#total-harga').textContent=money(tot);
+  $('#btn-checkout').disabled=!S.cart.length;
+}
+function addToCart(){
+  const id=$('#sel-obat').value,qty=N('in-jml')||1;
+  if(!id)return toast('Pilih obat dulu','error');
+  const med=S.meds.find(m=>m.id===id);
+  const ex=S.cart.find(c=>c.med.id===id);
+  const total=qty+(ex?ex.qty:0);
+  if(total>med.total_stok_satuan)return toast(`Stok tidak cukup! Sisa ${med.total_stok_satuan} satuan`,'warn');
+  if(ex)ex.qty=total;else S.cart.push({med,qty});
+  $('#in-jml').value=1;renderKasir();toast(med.nama_obat+' ditambahkan');
+}
+function chQty(id,d){const c=S.cart.find(x=>x.med.id===id);c.qty+=d;if(c.qty<=0)return rmItem(id);
+  if(c.qty>c.med.total_stok_satuan){c.qty-=d;return toast('Melebihi stok!','warn')}renderKasir()}
+function rmItem(id){S.cart=S.cart.filter(c=>c.med.id!==id);renderKasir()}
+async function checkout(){
+  if(!S.cart.length)return;const b=$('#btn-checkout');b.disabled=true;b.textContent='Memproses...';
+  const {data:tx,error:e1}=await db.from('transactions').insert([{nama_pasien:V('p_nama')||null,catatan:V('p_catat')||null,total_harga:0}]).select().single();
+  if(e1){toast(e1.message,'error');b.disabled=false;b.textContent='✔ Proses Transaksi';return}
+  const items=S.cart.map(c=>({transaction_id:tx.id,medicine_id:c.med.id,jumlah_satuan:c.qty,harga_satuan:c.med.harga_jual_per_satuan}));
+  const {error:e2}=await db.from('transaction_items').insert(items);
+  if(e2){await db.from('transactions').delete().eq('id',tx.id);toast(e2.message,'error');b.disabled=false;b.textContent='✔ Proses Transaksi';return}
+  const {data:full}=await db.from('transactions').select('total_harga,transaction_items(*,medicines:medicine_id(nama_obat))').eq('id',tx.id).single();
+  $('#struk-body').innerHTML=full.transaction_items.map(i=>`<div class="flex justify-between"><span>${i.medicines.nama_obat} × ${i.jumlah_satuan}</span><b>${money(i.subtotal)}</b></div>`).join('');
+  $('#struk-total').textContent=money(full.total_harga);
+  $('#modal-struk').classList.add('open');
+  S.cart=[];$('#p_nama').value='';$('#p_catat').value='';
+  await loadMeds();renderKasir();toast('Transaksi tersimpan, stok diperbarui');
+  b.disabled=false;b.textContent='✔ Proses Transaksi';
+}
+function closeStruk(){$('#modal-struk').classList.remove('open')}
+
+/* ================= RIWAYAT ================= */
+async function renderRiwayat(){
+  const {data,error}=await db.from('transactions').select('*, transaction_items(*,medicines:medicine_id(nama_obat))').order('tanggal_transaksi',{ascending:false}).limit(50);
+  if(error)return toast(error.message,'error');
+  const rows=data||[];const tot=rows.reduce((s,r)=>s+Number(r.total_harga),0);
+  $('#riv-stat').innerHTML=[['Total Transaksi',rows.length],['Total Nilai',money(tot)],['Rata-rata',money(rows.length?tot/rows.length:0)]]
+    .map(([t,v])=>`<div class="card p-4"><p class="text-[11px] font-bold uppercase text-slate-500">${t}</p><p class="text-xl font-extrabold text-[#0f2b46]">${v}</p></div>`).join('');
+  $('#riv-list').innerHTML=rows.length?rows.map(r=>`<div class="card p-4 fade">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <div><p class="font-bold">${r.nama_pasien||'Tanpa Nama'}</p><p class="text-[11px] text-slate-500">${fd(r.tanggal_transaksi)} • ${ft(r.tanggal_transaksi)} ${r.catatan?'• '+r.catatan:''}</p></div>
+      <span class="badge bg-[#0f2b46] text-white text-sm">${money(r.total_harga)}</span></div>
+    <div class="mt-2 flex flex-wrap gap-1">${r.transaction_items.map(i=>`<span class="badge bg-sky-50 text-sky-700 border border-sky-100">${i.medicines?.nama_obat||'-'} × ${i.jumlah_satuan}</span>`).join('')}</div>
+  </div>`).join(''):'<p class="text-center text-slate-400 py-10">Belum ada transaksi.</p>';
+}
+
+boot();
+</script>
+</body>
+</html>
