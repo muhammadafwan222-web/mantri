@@ -582,8 +582,12 @@ async function checkout(){
 }
 
 function resetCheckoutBtn(){
-  const b=$('.btn-g');
-  b.forEach(btn => {btn.disabled=false;btn.innerHTML=`<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Proses & Bayar`;});
+  // PERBAIKAN: Gunakan $$ bukan $
+  const btns = $$('.btn-g');
+  btns.forEach(btn => {
+    btn.disabled = false;
+    btn.innerHTML = `<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Proses & Bayar`;
+  });
 }
 
 function closeStruk(){$('#modal-struk').classList.remove('open')}
