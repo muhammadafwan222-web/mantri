@@ -548,27 +548,37 @@ function openMobileCart(){$('#modal-cart').classList.add('open')}
 function closeMobileCart(){$('#modal-cart').classList.remove('open')}
 
 async function checkout(){
-  if(!S.cart.length)return;
-  const b=$('.btn-g'); // Target both checkout buttons
-  b.forEach(btn => {btn.disabled=true;btn.innerHTML=`<svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;});
+  if(!S.cart.length) return;
   
-  const {data:tx,error:e1}=await db.from('transactions').insert([{nama_pasien:V('p_nama')||null,catatan:V('p_catat')||null,total_harga:0}]).select().single();
-  if(e1){toast(e1.message,'error');resetCheckoutBtn();return}
+  // PERBAIKAN: Gunakan $$ bukan $ untuk mengambil semua elemen
+  const btns = $$('.btn-g'); 
+  btns.forEach(btn => {
+    btn.disabled = true;
+    btn.innerHTML = `<svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+  });
   
-  const items=S.cart.map(c=>({transaction_id:tx.id,medicine_id:c.med.id,jumlah_satuan:c.qty,harga_satuan:c.med.harga_jual_per_satuan}));
-  const {error:e2}=await db.from('transaction_items').insert(items);
-  if(e2){await db.from('transactions').delete().eq('id',tx.id);toast(e2.message,'error');resetCheckoutBtn();return}
-  
-  const {data:full}=await db.from('transactions').select('total_harga,transaction_items(*,medicines:medicine_id(nama_obat))').eq('id',tx.id).single();
-  $('#struk-body').innerHTML=full.transaction_items.map(i=>`<div class="flex justify-between"><span class="text-slate-600">${i.medicines.nama_obat} <span class="text-slate-400">x${i.jumlah_satuan}</span></span><b class="text-slate-800">${money(i.subtotal)}</b></div>`).join('');
-  $('#struk-total').textContent=money(full.total_harga);
-  
-  closeMobileCart();
-  $('#modal-struk').classList.add('open');
-  
-  S.cart=[];$('#p_nama').value='';$('#p_catat').value='';$('#search-kasir').value='';
-  await loadMeds();renderKasir();toast('Transaksi berhasil!');
-  resetCheckoutBtn();
+  try {
+    const {data:tx,error:e1}=await db.from('transactions').insert([{nama_pasien:V('p_nama')||null,catatan:V('p_catat')||null,total_harga:0}]).select().single();
+    if(e1){toast(e1.message,'error');resetCheckoutBtn();return}
+    
+    const items=S.cart.map(c=>({transaction_id:tx.id,medicine_id:c.med.id,jumlah_satuan:c.qty,harga_satuan:c.med.harga_jual_per_satuan}));
+    const {error:e2}=await db.from('transaction_items').insert(items);
+    if(e2){await db.from('transactions').delete().eq('id',tx.id);toast(e2.message,'error');resetCheckoutBtn();return}
+    
+    const {data:full}=await db.from('transactions').select('total_harga,transaction_items(*,medicines:medicine_id(nama_obat))').eq('id',tx.id).single();
+    $('#struk-body').innerHTML=full.transaction_items.map(i=>`<div class="flex justify-between"><span class="text-slate-600">${i.medicines.nama_obat} <span class="text-slate-400">x${i.jumlah_satuan}</span></span><b class="text-slate-800">${money(i.subtotal)}</b></div>`).join('');
+    $('#struk-total').textContent=money(full.total_harga);
+    
+    closeMobileCart();
+    $('#modal-struk').classList.add('open');
+    
+    S.cart=[];$('#p_nama').value='';$('#p_catat').value='';$('#search-kasir').value='';
+    await loadMeds();renderKasir();toast('Transaksi berhasil!');
+    resetCheckoutBtn();
+  } catch(err) {
+    toast(err.message, 'error');
+    resetCheckoutBtn();
+  }
 }
 
 function resetCheckoutBtn(){
