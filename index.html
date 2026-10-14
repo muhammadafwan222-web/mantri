@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PharmaPOS · Sistem Manajemen Apotek Profesional</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>PharmaPOS · Sistem Apotek Profesional</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -23,226 +23,257 @@
   }
 </script>
 <style>
-  ::-webkit-scrollbar{width:6px;height:6px}
+  * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  ::-webkit-scrollbar{width:4px;height:4px}
   ::-webkit-scrollbar-track{background:transparent}
   ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
-  ::-webkit-scrollbar-thumb:hover{background:#94a3b8}
   .card{background:#fff;border:1px solid #f1f5f9;border-radius:1rem;box-shadow:0 1px 3px rgba(15,23,42,.04)}
-  .inp{width:100%;border:1.5px solid #e2e8f0;border-radius:.75rem;padding:.65rem .9rem;font-size:.875rem;background:#fff;outline:none;transition:all .15s;font-weight:500}
+  .inp{width:100%;border:1.5px solid #e2e8f0;border-radius:.75rem;padding:.75rem .9rem;font-size:1rem;background:#fff;outline:none;transition:all .15s;font-weight:500}
   .inp:focus{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.1)}
   .lbl{display:block;font-size:.7rem;font-weight:700;color:#64748b;margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.05em}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:.75rem;font-weight:600;font-size:.875rem;padding:.65rem 1.1rem;transition:all .15s;cursor:pointer;border:none}
-  .btn:active{transform:scale(.97)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:.75rem;font-weight:600;font-size:.9rem;padding:.75rem 1.1rem;transition:all .1s;cursor:pointer;border:none}
+  .btn:active{transform:scale(.96)}
   .btn-p{background:#0f172a;color:#fff}.btn-p:hover{background:#1e293b}
   .btn-c{background:#10b981;color:#fff}.btn-c:hover{background:#059669}
   .btn-g{background:#059669;color:#fff}.btn-g:hover{background:#047857}
-  .btn-o{background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0}.btn-o:hover{background:#f1f5f9;border-color:#cbd5e1}
+  .btn-o{background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0}.btn-o:hover{background:#f1f5f9}
   .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-  .badge{display:inline-flex;align-items:center;border-radius:99px;padding:.2rem .65rem;font-size:.65rem;font-weight:700;letter-spacing:.02em}
+  .badge{display:inline-flex;align-items:center;border-radius:99px;padding:.25rem .65rem;font-size:.7rem;font-weight:700}
   .fade{animation:fade .25s cubic-bezier(0.16, 1, 0.3, 1)}
-  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
   .page{display:none}.page.active{display:block}
-  .nav-btn{display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;border-radius:.75rem;font-size:.875rem;font-weight:600;color:#94a3b8;transition:all .15s;width:100%;text-align:left}
-  .nav-btn:hover{background:rgba(255,255,255,.05);color:#e2e8f0}
-  .nav-btn.active{background:rgba(16,185,129,.15);color:#34d399;box-shadow:inset 3px 0 0 #10b981}
-  table.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:.875rem}
-  .tbl th{background:#f8fafc;text-align:left;padding:.85rem 1rem;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:#64748b;font-weight:700}
-  .tbl th:first-child{border-top-left-radius:.75rem;border-bottom-left-radius:.75rem}
-  .tbl th:last-child{border-top-right-radius:.75rem;border-bottom-right-radius:.75rem}
-  .tbl td{padding:.85rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
-  .tbl tr:hover td{background:#f8fafc}
-  .modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(4px);z-index:60;display:none;align-items:center;justify-content:center;padding:1rem}
+  
+  /* Mobile Bottom Nav */
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;justify-content:space-around;padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));z-index:50}
+  .nav-item{display:flex;flex-direction:column;align-items:center;gap:0.25rem;padding:0.5rem 1rem;border-radius:0.75rem;color:#94a3b8;font-size:0.7rem;font-weight:600;transition:all .15s}
+  .nav-item.active{color:#059669;background:#ecfdf5}
+  
+  /* Mobile Table to Card */
+  @media (max-width: 640px) {
+    .tbl-mobile thead { display: none; }
+    .tbl-mobile tr { display: block; border: 1px solid #f1f5f9; border-radius: 0.75rem; margin-bottom: 0.75rem; padding: 1rem; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+    .tbl-mobile td { display: flex; justify-content: space-between; align-items: center; border: none; padding: 0.4rem 0; font-size: 0.9rem; }
+    .tbl-mobile td::before { content: attr(data-label); font-weight: 700; color: #64748b; font-size: 0.75rem; text-transform: uppercase; margin-right: 1rem; }
+    .tbl-mobile td:last-child { justify-content: flex-end; margin-top: 0.5rem; padding-top: 0.75rem; border-top: 1px dashed #e2e8f0; }
+    .tbl-mobile td:last-child::before { display: none; }
+  }
+
+  .modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(4px);z-index:60;display:none;align-items:flex-end;justify-content:center;padding:0}
   .modal-bg.open{display:flex}
+  @media (min-width: 640px) {
+    .modal-bg{align-items:center;padding:1rem}
+    .modal-content{border-radius:1rem !important; max-height: 90vh !important;}
+  }
   .receipt-line{border-top:2px dashed #e2e8f0;margin:1rem 0}
 </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased">
+<body class="bg-slate-50 text-slate-800 antialiased pb-16 lg:pb-0">
 
-<div id="toasts" class="fixed top-4 right-4 z-[100] space-y-2 w-[min(92vw,22rem)]"></div>
+<div id="toasts" class="fixed top-4 right-4 left-4 sm:left-auto z-[100] space-y-2 w-auto sm:w-[min(92vw,22rem)] pointer-events-none"></div>
 
 <!-- ================= APP ================= -->
 <div id="app" class="hidden min-h-screen flex flex-col">
-  <div id="backdrop" class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden backdrop-blur-sm" onclick="closeSide()"></div>
-
-  <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 -translate-x-full lg:translate-x-0 transition-transform duration-300 bg-slate-900 text-white flex flex-col shadow-2xl">
+  
+  <!-- Desktop Sidebar -->
+  <aside id="sidebar" class="hidden lg:flex fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex-col shadow-2xl">
     <div class="flex items-center gap-3 border-b border-white/10 px-6 py-6">
       <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 grid place-items-center shadow-lg shadow-primary-500/20">
         <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
       </div>
       <div><h1 class="font-extrabold text-lg tracking-tight">PharmaPOS</h1><p class="text-[11px] text-slate-400 font-medium">Sistem Apotek Terpadu</p></div>
     </div>
-    <nav id="nav" class="flex-1 space-y-1 px-3 py-4"></nav>
-    <div class="border-t border-white/10 p-4">
-      <div class="bg-white/5 rounded-xl p-3 flex items-center gap-3">
-        <div class="h-9 w-9 rounded-full bg-primary-500/20 text-primary-400 grid place-items-center font-bold text-sm">A</div>
-        <div class="flex-1 min-w-0"><p class="text-sm font-semibold truncate">Admin Apotek</p><p class="text-[10px] text-slate-400">Online</p></div>
-      </div>
-    </div>
+    <nav id="nav-desktop" class="flex-1 space-y-1 px-3 py-4"></nav>
   </aside>
 
-  <div class="lg:pl-64 min-h-screen flex flex-col">
-    <header class="sticky top-0 z-30 h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 sm:px-6">
-      <div class="flex items-center gap-3">
-        <button class="lg:hidden p-2 rounded-lg hover:bg-slate-100 text-slate-600" onclick="toggleSide()">
-          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
-        <div><h2 id="page-title" class="font-bold text-slate-800 text-lg leading-tight">Dashboard</h2><p id="page-sub" class="text-xs text-slate-500 font-medium"></p></div>
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-nav lg:hidden shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+    <button class="nav-item active" data-k="dashboard" onclick="go('dashboard')">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="nav-item" data-k="inventaris" onclick="go('inventaris')">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+      <span>Obat</span>
+    </button>
+    <button class="nav-item" data-k="kasir" onclick="go('kasir')">
+      <div class="h-12 w-12 -mt-6 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-primary-500/30 border-4 border-slate-50">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 4.5a1 1 0 00.9 1.5H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
       </div>
+      <span class="mt-1">Kasir</span>
+    </button>
+    <button class="nav-item" data-k="riwayat" onclick="go('riwayat')">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span>Riwayat</span>
+    </button>
+  </nav>
+
+  <div class="lg:pl-64 min-h-screen flex flex-col">
+    <header class="sticky top-0 z-30 h-16 bg-white/90 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 sm:px-6">
       <div class="flex items-center gap-3">
-        <button class="relative p-2.5 rounded-full hover:bg-slate-100 text-slate-500 transition-colors">
+        <div>
+          <h2 id="page-title" class="font-bold text-slate-800 text-lg leading-tight">Dashboard</h2>
+          <p id="page-sub" class="text-xs text-slate-500 font-medium hidden sm:block"></p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="relative p-2.5 rounded-full hover:bg-slate-100 text-slate-500">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
           <span id="bell-dot" class="hidden absolute right-2 top-2 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-white"></span>
         </button>
       </div>
     </header>
 
-    <main class="flex-1 p-4 sm:p-6 lg:p-8">
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8">
       <!-- ===== DASHBOARD ===== -->
-      <section id="page-dashboard" class="page active space-y-6">
-        <div id="stat-grid" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"></div>
-        <div class="grid gap-6 xl:grid-cols-5">
-          <div class="card p-6 xl:col-span-3">
-            <div class="flex items-center justify-between mb-6">
-              <div><h3 class="font-bold text-slate-800 flex items-center gap-2"><svg class="h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>Top 5 Obat Terlaris</h3><p class="text-xs text-slate-500 mt-1">Berdasarkan jumlah satuan terjual bulan ini</p></div>
-            </div>
-            <div style="height:240px"><canvas id="chart-top"></canvas></div>
+      <section id="page-dashboard" class="page active space-y-5">
+        <div id="stat-grid" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"></div>
+        <div class="grid gap-5 xl:grid-cols-5">
+          <div class="card p-5 xl:col-span-3">
+            <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-1"><svg class="h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>Top 5 Obat Terlaris</h3>
+            <p class="text-xs text-slate-500 mb-4">Berdasarkan jumlah satuan terjual bulan ini</p>
+            <div style="height:220px"><canvas id="chart-top"></canvas></div>
           </div>
-          <div class="card p-6 xl:col-span-2">
-            <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-1"><svg class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>Peringatan Stok</h3>
-            <p class="text-xs text-slate-500 mb-4">Obat dengan stok di bawah batas minimal</p>
-            <div id="stok-alert" class="space-y-3 max-h-[240px] overflow-y-auto pr-2"></div>
+          <div class="card p-5 xl:col-span-2">
+            <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-1"><svg class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>Stok Menipis</h3>
+            <div id="stok-alert" class="space-y-3 max-h-[220px] overflow-y-auto pr-1 mt-3"></div>
           </div>
         </div>
       </section>
 
       <!-- ===== INVENTARIS ===== -->
-      <section id="page-inventaris" class="page space-y-5">
-        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <div class="relative w-full sm:max-w-md">
-            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            <input id="search-obat" class="inp pl-10" placeholder="Cari nama obat atau kategori..." oninput="renderInventaris()">
+      <section id="page-inventaris" class="page space-y-4">
+        <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+          <div class="relative flex-1">
+            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input id="search-obat" class="inp pl-11" placeholder="Cari nama obat..." oninput="renderInventaris()">
           </div>
-          <button class="btn btn-p w-full sm:w-auto" onclick="openObat()"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> Tambah Obat Baru</button>
+          <button class="btn btn-p w-full sm:w-auto" onclick="openObat()"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> Tambah Obat</button>
         </div>
-        <div class="card overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="tbl"><thead><tr>
-              <th>Nama Obat & Kategori</th><th class="text-center">Stok Fisik</th>
-              <th class="text-center">Total Satuan</th><th class="text-right">Harga Jual</th>
-              <th class="text-center">Status</th><th class="text-right">Aksi</th>
-            </tr></thead><tbody id="tbody-obat"></tbody></table>
-          </div>
-        </div>
+        <div class="tbl-mobile space-y-3" id="tbody-obat"></div>
       </section>
 
-      <!-- ===== KASIR (POS LAYOUT) ===== -->
-      <section id="page-kasir" class="page h-[calc(100vh-8rem)]">
-        <div class="grid gap-6 h-full lg:grid-cols-12">
-          <!-- Left: Product Grid/List -->
-          <div class="lg:col-span-8 flex flex-col h-full">
-            <div class="card p-4 mb-4 flex-shrink-0">
-              <div class="grid sm:grid-cols-2 gap-3 mb-3">
-                <div><label class="lbl">Nama Pasien</label><input id="p_nama" class="inp" placeholder="Nama pasien / Umum"></div>
-                <div><label class="lbl">Catatan / Diagnosa</label><input id="p_catat" class="inp" placeholder="Contoh: Demam, Batuk"></div>
-              </div>
-              <div class="relative">
-                <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input id="search-kasir" class="inp pl-10" placeholder="Ketik nama obat untuk mencari..." oninput="fillSelect()">
-              </div>
-            </div>
-            
-            <div class="card flex-1 overflow-hidden flex flex-col">
-              <div class="p-4 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
-                <h3 class="font-bold text-slate-800 text-sm">Daftar Obat Tersedia</h3>
-                <span class="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-md" id="count-obat">0 item</span>
-              </div>
-              <div id="product-list" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
-            </div>
+      <!-- ===== KASIR (POS) ===== -->
+      <section id="page-kasir" class="page space-y-4">
+        <div class="card p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+            <div><label class="lbl">Nama Pasien</label><input id="p_nama" class="inp" placeholder="Nama pasien / Umum"></div>
+            <div><label class="lbl">Catatan</label><input id="p_catat" class="inp" placeholder="Contoh: Demam"></div>
           </div>
+          <div class="relative">
+            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input id="search-kasir" class="inp pl-11" placeholder="Cari obat untuk ditambahkan..." oninput="fillSelect()">
+          </div>
+        </div>
+        
+        <div id="product-list" class="space-y-3 pb-24"></div>
 
-          <!-- Right: Digital Receipt / Cart -->
-          <div class="lg:col-span-4 flex flex-col h-full">
-            <div class="card flex-1 flex flex-col overflow-hidden shadow-lg border-primary-100">
-              <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between flex-shrink-0">
-                <h3 class="font-bold flex items-center gap-2"><svg class="h-5 w-5 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 4.5a1 1 0 00.9 1.5H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>Keranjang Belanja</h3>
-                <span id="cart-count" class="bg-primary-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+        <!-- Mobile Sticky Cart Button -->
+        <div class="lg:hidden fixed bottom-20 left-4 right-4 z-40" id="mobile-cart-btn" style="display:none">
+          <button onclick="openMobileCart()" class="w-full bg-slate-900 text-white rounded-2xl p-4 shadow-xl shadow-slate-900/20 flex items-center justify-between active:scale-95 transition-transform">
+            <div class="flex items-center gap-3">
+              <div class="bg-primary-500 text-white h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm" id="mobile-cart-count">0</div>
+              <span class="font-semibold">Lihat Keranjang</span>
+            </div>
+            <span class="font-bold text-lg" id="mobile-cart-total">Rp0</span>
+          </button>
+        </div>
+
+        <!-- Desktop Cart (Hidden on Mobile) -->
+        <div class="hidden lg:block fixed right-8 top-24 bottom-8 w-96">
+          <div class="card h-full flex flex-col shadow-xl border-primary-100">
+            <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between rounded-t-[1rem]">
+              <h3 class="font-bold flex items-center gap-2"><svg class="h-5 w-5 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 4.5a1 1 0 00.9 1.5H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>Keranjang</h3>
+              <span id="cart-count" class="bg-primary-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="keranjang" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+            <div class="p-5 bg-slate-50 border-t border-slate-200">
+              <div id="ringkasan" class="space-y-2 text-sm mb-4"></div>
+              <div class="receipt-line"></div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="font-bold text-slate-700 text-lg">Total</span>
+                <span id="total-harga" class="text-2xl font-extrabold text-primary-600">Rp0</span>
               </div>
-              
-              <div id="keranjang" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
-              
-              <div class="p-5 bg-slate-50 border-t border-slate-200 flex-shrink-0">
-                <div id="ringkasan" class="space-y-2 text-sm mb-4"></div>
-                <div class="receipt-line"></div>
-                <div class="flex items-center justify-between mb-4">
-                  <span class="font-bold text-slate-700 text-lg">Total Tagihan</span>
-                  <span id="total-harga" class="text-2xl font-extrabold text-primary-600">Rp0</span>
-                </div>
-                <button id="btn-checkout" class="btn btn-g w-full py-3.5 text-base shadow-lg shadow-primary-500/20" onclick="checkout()">
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                  Proses & Bayar
-                </button>
-              </div>
+              <button id="btn-checkout" class="btn btn-g w-full py-3.5 text-base shadow-lg shadow-primary-500/20" onclick="checkout()">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Proses & Bayar
+              </button>
             </div>
           </div>
         </div>
       </section>
 
       <!-- ===== RIWAYAT ===== -->
-      <section id="page-riwayat" class="page space-y-5">
-        <div class="grid sm:grid-cols-3 gap-4" id="riv-stat"></div>
-        <div class="card overflow-hidden">
-          <div class="p-4 border-b border-slate-100"><h3 class="font-bold text-slate-800">Riwayat Transaksi Terakhir</h3></div>
-          <div id="riv-list" class="divide-y divide-slate-100 max-h-[600px] overflow-y-auto"></div>
-        </div>
+      <section id="page-riwayat" class="page space-y-4">
+        <div class="grid grid-cols-3 gap-3" id="riv-stat"></div>
+        <div id="riv-list" class="space-y-3 pb-20"></div>
       </section>
     </main>
   </div>
 </div>
 
-<!-- ===== MODAL OBAT ===== -->
-<div id="modal-obat" class="modal-bg"><div class="card w-full max-w-lg p-6 fade max-h-[92vh] overflow-y-auto shadow-2xl">
-  <div class="flex items-center justify-between mb-5">
-    <h3 id="mo-title" class="font-bold text-xl text-slate-800">Tambah Obat Baru</h3>
-    <button class="p-2 hover:bg-slate-100 rounded-full text-slate-400" onclick="closeObat()"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
-  </div>
-  <div class="grid gap-4">
-    <div class="grid grid-cols-2 gap-4">
-      <div class="col-span-2"><label class="lbl">Nama Obat</label><input id="f_nama" class="inp" placeholder="Contoh: Paracetamol 500mg"></div>
-      <div class="col-span-2"><label class="lbl">Kategori</label><input id="f_kategori" class="inp" placeholder="Contoh: Analgesik, Antibiotik"></div>
+<!-- ===== MODAL OBAT (Mobile Bottom Sheet) ===== -->
+<div id="modal-obat" class="modal-bg">
+  <div class="modal-content card w-full sm:max-w-lg p-5 sm:p-6 fade max-h-[90vh] overflow-y-auto bg-white rounded-t-2xl sm:rounded-2xl">
+    <div class="flex items-center justify-between mb-5">
+      <h3 id="mo-title" class="font-bold text-xl text-slate-800">Tambah Obat</h3>
+      <button class="p-2 hover:bg-slate-100 rounded-full text-slate-400" onclick="closeObat()"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
     </div>
-    <div class="grid grid-cols-3 gap-4">
-      <div><label class="lbl">Stok (Kotak)</label><input id="f_kotak" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
-      <div><label class="lbl">Eceran (Satuan)</label><input id="f_sisa" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
-      <div><label class="lbl">Isi per Kotak</label><input id="f_isi" type="number" min="1" value="100" class="inp" oninput="calcInfo()"></div>
+    <div class="grid gap-4">
+      <div><label class="lbl">Nama Obat</label><input id="f_nama" class="inp" placeholder="Contoh: Paracetamol 500mg"></div>
+      <div><label class="lbl">Kategori</label><input id="f_kategori" class="inp" placeholder="Contoh: Analgesik"></div>
+      <div class="grid grid-cols-3 gap-3">
+        <div><label class="lbl">Kotak</label><input id="f_kotak" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
+        <div><label class="lbl">Eceran</label><input id="f_sisa" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
+        <div><label class="lbl">Isi/Kotak</label><input id="f_isi" type="number" min="1" value="100" class="inp" oninput="calcInfo()"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="lbl">Harga Beli/Kotak</label><input id="f_beli" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
+        <div><label class="lbl">Harga Jual/Satuan</label><input id="f_jual" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
+      </div>
+      <div id="info-calc" class="rounded-xl bg-primary-50 border border-primary-100 p-4 text-sm text-primary-800 space-y-1.5"></div>
     </div>
-    <div class="grid grid-cols-2 gap-4">
-      <div><label class="lbl">Harga Beli / Kotak</label><input id="f_beli" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
-      <div><label class="lbl">Harga Jual / Satuan</label><input id="f_jual" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
+    <div class="flex gap-3 mt-6 pt-4 border-t border-slate-100">
+      <button class="btn btn-o flex-1" onclick="closeObat()">Batal</button>
+      <button class="btn btn-p flex-1" onclick="saveObat()">Simpan</button>
     </div>
-    <div><label class="lbl">Batas Stok Minimal (satuan)</label><input id="f_min" type="number" min="1" value="20" class="inp"></div>
-    
-    <div id="info-calc" class="rounded-xl bg-primary-50 border border-primary-100 p-4 text-sm text-primary-800 space-y-1.5"></div>
   </div>
-  <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
-    <button class="btn btn-o" onclick="closeObat()">Batal</button>
-    <button class="btn btn-p" onclick="saveObat()">Simpan Data</button>
+</div>
+
+<!-- ===== MOBILE CART MODAL ===== -->
+<div id="modal-cart" class="modal-bg">
+  <div class="modal-content card w-full p-0 fade bg-white rounded-t-2xl sm:rounded-2xl max-h-[85vh] flex flex-col">
+    <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between rounded-t-2xl flex-shrink-0">
+      <h3 class="font-bold flex items-center gap-2"><svg class="h-5 w-5 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 4.5a1 1 0 00.9 1.5H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>Keranjang Belanja</h3>
+      <button onclick="closeMobileCart()" class="p-1 hover:bg-white/10 rounded-full"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div id="keranjang-mobile" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+    <div class="p-5 bg-slate-50 border-t border-slate-200 flex-shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+      <div class="flex items-center justify-between mb-4">
+        <span class="font-bold text-slate-700 text-lg">Total Tagihan</span>
+        <span id="total-harga-mobile" class="text-2xl font-extrabold text-primary-600">Rp0</span>
+      </div>
+      <button id="btn-checkout-mobile" class="btn btn-g w-full py-3.5 text-base shadow-lg shadow-primary-500/20" onclick="checkout()">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Proses & Bayar
+      </button>
+    </div>
   </div>
-</div></div>
+</div>
 
 <!-- ===== MODAL STRUK ===== -->
-<div id="modal-struk" class="modal-bg"><div class="card w-full max-w-sm p-0 fade shadow-2xl overflow-hidden">
-  <div class="bg-primary-600 text-white px-6 py-5 text-center">
-    <div class="mx-auto h-12 w-12 rounded-full bg-white/20 grid place-items-center mb-2"><svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-    <h3 class="font-bold text-lg">Transaksi Berhasil</h3>
-    <p class="text-xs text-primary-100 mt-1">Stok obat telah diperbarui secara otomatis</p>
+<div id="modal-struk" class="modal-bg">
+  <div class="modal-content card w-full max-w-sm p-0 fade shadow-2xl overflow-hidden bg-white rounded-t-2xl sm:rounded-2xl">
+    <div class="bg-primary-600 text-white px-6 py-6 text-center">
+      <div class="mx-auto h-14 w-14 rounded-full bg-white/20 grid place-items-center mb-3"><svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
+      <h3 class="font-bold text-xl">Transaksi Berhasil</h3>
+      <p class="text-sm text-primary-100 mt-1">Stok obat telah diperbarui otomatis</p>
+    </div>
+    <div class="p-6">
+      <div id="struk-body" class="text-sm space-y-2"></div>
+      <div class="receipt-line"></div>
+      <div class="flex justify-between items-center"><span class="font-bold text-slate-700 text-lg">Total Bayar</span><span id="struk-total" class="text-2xl font-extrabold text-primary-600"></span></div>
+      <button class="btn btn-p w-full mt-6 py-3.5" onclick="closeStruk()">Tutup & Transaksi Baru</button>
+    </div>
   </div>
-  <div class="p-6">
-    <div id="struk-body" class="text-sm space-y-2"></div>
-    <div class="receipt-line"></div>
-    <div class="flex justify-between items-center"><span class="font-bold text-slate-700 text-lg">Total Bayar</span><span id="struk-total" class="text-xl font-extrabold text-primary-600"></span></div>
-    <button class="btn btn-p w-full mt-6 py-3" onclick="closeStruk()">Tutup & Transaksi Baru</button>
-  </div>
-</div></div>
+</div>
 
 <script>
 /* ================= KONFIGURASI DATABASE ================= */
@@ -254,7 +285,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const V=id=>(document.getElementById(id)?.value??'').trim();
 const N=id=>parseFloat(document.getElementById(id)?.value)||0;
 const money=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0);
-const BL=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const BL=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
 const fd=d=>new Date(d).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
 const ft=d=>new Date(d).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
 
@@ -262,7 +293,7 @@ function toast(m,t='ok'){
   const colors = t==='error'?'bg-red-500':t==='warn'?'bg-amber-500':'bg-primary-600';
   const icon = t==='error'?'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z':t==='warn'?'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z':'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z';
   const e=document.createElement('div');
-  e.className=`fade flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-semibold text-white shadow-xl shadow-slate-200 ${colors}`;
+  e.className=`fade flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-semibold text-white shadow-xl shadow-slate-200 ${colors} pointer-events-auto`;
   e.innerHTML=`<svg class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="${icon}"/></svg><span>${m}</span>`;
   $('#toasts').appendChild(e);
   setTimeout(()=>{e.style.opacity=0;e.style.transform='translateY(-10px)';e.style.transition='all .3s';setTimeout(()=>e.remove(),300)},3000);
@@ -285,17 +316,17 @@ const ic=(k,c='h-5 w-5')=>`<svg class="${c}" fill="none" viewBox="0 0 24 24" str
 /* ================= STATE & DB ================= */
 let db=null;
 const S={meds:[],cart:[],edit:null,chart:null};
-const NAV=[{k:'dashboard',t:'Dashboard',s:'Ringkasan performa apotek bulan ini',i:'home'},
-{k:'inventaris',t:'Inventaris Obat',s:'Kelola data, harga, dan stok obat',i:'box'},
-{k:'kasir',t:'Kasir (POS)',s:'Catat penjualan dan pengeluaran obat',i:'cart'},
-{k:'riwayat',t:'Riwayat Transaksi',s:'Arsip dan laporan penggunaan obat',i:'clock'}];
+const NAV=[{k:'dashboard',t:'Dashboard',s:'Ringkasan performa apotek',i:'home'},
+{k:'inventaris',t:'Inventaris Obat',s:'Kelola data, harga, dan stok',i:'box'},
+{k:'kasir',t:'Kasir (POS)',s:'Catat penjualan dan pengeluaran',i:'cart'},
+{k:'riwayat',t:'Riwayat Transaksi',s:'Arsip dan laporan penggunaan',i:'clock'}];
 
 async function boot(){
-  $('#nav').innerHTML=NAV.map(n=>`<button class="nav-btn" data-k="${n.k}" onclick="go('${n.k}')">${ic(n.i,'h-5 w-5')}${n.t}</button>`).join('');
+  $('#nav-desktop').innerHTML=NAV.map(n=>`<button class="nav-btn" data-k="${n.k}" onclick="go('${n.k}')">${ic(n.i,'h-5 w-5')}${n.t}</button>`).join('');
   db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const {error} = await db.from('medicines').select('id').limit(1);
   if(error){
-    document.body.innerHTML = `<div class="min-h-screen grid place-items-center p-4 bg-slate-50"><div class="card p-8 text-center max-w-md"><div class="mx-auto h-12 w-12 rounded-full bg-red-100 text-red-600 grid place-items-center mb-4"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h1 class="text-xl font-bold text-slate-800 mb-2">Koneksi Database Gagal</h1><p class="text-sm text-slate-500 mb-6">${error.message}</p><p class="text-xs text-slate-400 bg-slate-100 p-3 rounded-lg">Pastikan SQL Schema sudah dijalankan di Supabase dan URL/Key sudah benar.</p></div></div>`;
+    document.body.innerHTML = `<div class="min-h-screen grid place-items-center p-4 bg-slate-50"><div class="card p-8 text-center max-w-md"><div class="mx-auto h-12 w-12 rounded-full bg-red-100 text-red-600 grid place-items-center mb-4">${ic('warn','h-6 w-6')}</div><h1 class="text-xl font-bold text-slate-800 mb-2">Koneksi Gagal</h1><p class="text-sm text-slate-500 mb-6">${error.message}</p></div></div>`;
     return;
   }
   $('#app').classList.remove('hidden');
@@ -306,15 +337,18 @@ async function boot(){
 
 /* ================= ROUTING ================= */
 function go(k){location.hash='#/'+k}
-function toggleSide(){$('#sidebar').classList.toggle('-translate-x-full');$('#backdrop').classList.toggle('hidden')}
-function closeSide(){$('#sidebar').classList.add('-translate-x-full');$('#backdrop').classList.add('hidden')}
 async function route(){
   const k=(location.hash.replace('#/','')||'dashboard');
   const it=NAV.find(n=>n.k===k)||NAV[0];
   $$('.page').forEach(p=>p.classList.remove('active'));
   $('#page-'+it.k)?.classList.add('active');
-  $$('#nav .nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.k===it.k));
-  $('#page-title').textContent=it.t;$('#page-sub').textContent=it.s;closeSide();
+  
+  // Update Desktop Nav
+  $$('#nav-desktop .nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.k===it.k));
+  // Update Mobile Nav
+  $$('.bottom-nav .nav-item').forEach(b=>b.classList.toggle('active',b.dataset.k===it.k));
+  
+  $('#page-title').textContent=it.t;$('#page-sub').textContent=it.s;
   if(it.k==='dashboard')await renderDashboard();
   if(it.k==='inventaris')renderInventaris();
   if(it.k==='kasir')renderKasir();
@@ -322,7 +356,6 @@ async function route(){
 }
 addEventListener('hashchange',route);
 
-/* ================= DATA ================= */
 async function loadMeds(){
   const {data,error}=await db.from('medicines').select('*').order('nama_obat');
   if(error)return toast(error.message,'error');
@@ -345,29 +378,27 @@ async function renderDashboard(){
   $('#bell-dot').classList.toggle('hidden',tipis.length===0);
 
   const statCard=(icon,ttl,val,sub,bgIcon,bgText,bgBorder)=>`
-    <div class="card p-5 flex items-start justify-between hover:shadow-md transition-shadow">
-      <div><p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">${ttl}</p><p class="text-2xl font-extrabold text-slate-800 mt-1">${val}</p><p class="text-xs text-slate-500 mt-2 font-medium">${sub}</p></div>
-      <div class="h-12 w-12 rounded-xl ${bgIcon} ${bgText} ${bgBorder} grid place-items-center flex-shrink-0">${ic(icon,'h-6 w-6')}</div>
+    <div class="card p-4 flex items-start justify-between hover:shadow-md transition-shadow">
+      <div><p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">${ttl}</p><p class="text-xl sm:text-2xl font-extrabold text-slate-800 mt-1">${val}</p><p class="text-xs text-slate-500 mt-2 font-medium">${sub}</p></div>
+      <div class="h-10 w-10 sm:h-12 sm:w-12 rounded-xl ${bgIcon} ${bgText} ${bgBorder} grid place-items-center flex-shrink-0">${ic(icon,'h-5 w-5 sm:h-6 sm:w-6')}</div>
     </div>`;
   
   $('#stat-grid').innerHTML=
-    statCard('cash','Omset Bulan Ini',money(omset),jml+' transaksi','bg-primary-50','text-primary-600','border border-primary-100')+
+    statCard('cash','Omset Bulan Ini',money(omset),jml+' trx','bg-primary-50','text-primary-600','border border-primary-100')+
     statCard('cart','Total Transaksi',jml,'bulan '+BL[now.getMonth()],'bg-blue-50','text-blue-600','border border-blue-100')+
-    statCard('box','Jenis Obat',S.meds.length,'terdaftar di inventaris','bg-purple-50','text-purple-600','border border-purple-100')+
-    statCard('warn','Stok Menipis',tipis.length,'perlu segera direstock','bg-amber-50','text-amber-600','border border-amber-100');
+    statCard('box','Jenis Obat',S.meds.length,'terdaftar','bg-purple-50','text-purple-600','border border-purple-100')+
+    statCard('warn','Stok Menipis',tipis.length,'perlu restock','bg-amber-50','text-amber-600','border border-amber-100');
 
   if(S.chart)S.chart.destroy();
-  S.chart=new Chart($('#chart-top'),{type:'bar',data:{labels:top.map(t=>t.nama),datasets:[{data:top.map(t=>t.j),backgroundColor:'#10b981',borderRadius:6,barThickness:20}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#f1f5f9'},ticks:{font:{weight:'600'}}},y:{grid:{display:false},ticks:{font:{weight:'600',size:12}}}}}});
-  
-  $('#top-list') // Reused structure if needed, but chart is primary now
+  S.chart=new Chart($('#chart-top'),{type:'bar',data:{labels:top.map(t=>t.nama),datasets:[{data:top.map(t=>t.j),backgroundColor:'#10b981',borderRadius:6,barThickness:16}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#f1f5f9'},ticks:{font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
   
   $('#stok-alert').innerHTML=tipis.length?tipis.map(m=>`
-    <div class="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50/50 px-4 py-3">
-      <div><p class="text-sm font-bold text-slate-800">${m.nama_obat}</p><p class="text-[11px] text-slate-500 font-medium">Batas minimal: ${m.stok_minimal} satuan</p></div>
-      <span class="badge bg-amber-100 text-amber-700 border border-amber-200">Sisa ${m.total_stok_satuan}</span>
+    <div class="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50/50 px-3 py-2.5">
+      <div><p class="text-sm font-bold text-slate-800">${m.nama_obat}</p><p class="text-[10px] text-slate-500">Min: ${m.stok_minimal}</p></div>
+      <span class="badge bg-amber-100 text-amber-700 border border-amber-200">${m.total_stok_satuan}</span>
     </div>`).join('')
-    :`<div class="text-center py-8 text-slate-400"><div class="mx-auto h-12 w-12 rounded-full bg-primary-50 text-primary-500 grid place-items-center mb-2"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><p class="text-sm font-semibold text-slate-600">Semua stok aman</p></div>`;
+    :`<div class="text-center py-6 text-slate-400"><div class="mx-auto h-10 w-10 rounded-full bg-primary-50 text-primary-500 grid place-items-center mb-2">${ic('home','h-5 w-5')}</div><p class="text-sm font-semibold text-slate-600">Semua stok aman</p></div>`;
 }
 
 /* ================= INVENTARIS ================= */
@@ -376,18 +407,32 @@ function renderInventaris(){
   const rows=S.meds.filter(m=>m.nama_obat.toLowerCase().includes(q) || (m.kategori||'').toLowerCase().includes(q));
   $('#tbody-obat').innerHTML=rows.length?rows.map(m=>{
     const low=m.total_stok_satuan<=m.stok_minimal;
-    return `<tr>
-      <td><p class="font-bold text-slate-800">${m.nama_obat}</p><span class="badge bg-slate-100 text-slate-600 mt-1">${m.kategori||'Umum'}</span></td>
-      <td class="text-center"><span class="font-semibold text-slate-700">${m.stok_kotak}</span> <span class="text-xs text-slate-400">kotak</span>${m.sisa_satuan?` <span class="text-xs text-slate-500">+ ${m.sisa_satuan}</span>`:''}</td>
-      <td class="text-center font-bold text-slate-800">${m.total_stok_satuan}</td>
-      <td class="text-right font-semibold text-primary-700">${money(m.harga_jual_per_satuan)}</td>
-      <td class="text-center">${low?'<span class="badge bg-red-50 text-red-600 border border-red-100">Menipis</span>':'<span class="badge bg-primary-50 text-primary-700 border border-primary-100">Aman</span>'}</td>
-      <td><div class="flex justify-end gap-1">
-        <button class="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors" onclick="openObat('${m.id}')" title="Edit">${ic('edit','h-4 w-4')}</button>
-        <button class="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors" onclick="delObat('${m.id}')" title="Hapus">${ic('trash','h-4 w-4')}</button>
+    return `<div class="sm:hidden">
+      <div class="flex justify-between items-start mb-2">
+        <div><p class="font-bold text-slate-800">${m.nama_obat}</p><span class="badge bg-slate-100 text-slate-600 mt-1">${m.kategori||'Umum'}</span></div>
+        <span class="font-bold text-primary-700">${money(m.harga_jual_per_satuan)}</span>
+      </div>
+      <div class="flex justify-between text-sm mb-3">
+        <span class="text-slate-600">Stok: <b>${m.stok_kotak}</b> kotak ${m.sisa_satuan?`+ <b>${m.sisa_satuan}</b>`:''} (<b>${m.total_stok_satuan}</b> satuan)</span>
+        <span class="badge ${low?'bg-red-50 text-red-600 border-red-100':'bg-primary-50 text-primary-700 border-primary-100'} border">${low?'Menipis':'Aman'}</span>
+      </div>
+      <div class="flex justify-end gap-2 pt-3 border-t border-dashed border-slate-200">
+        <button class="btn btn-o !py-2 !px-3 text-xs" onclick="openObat('${m.id}')">${ic('edit','h-4 w-4')} Edit</button>
+        <button class="btn btn-o !py-2 !px-3 text-xs !text-red-500 !hover:bg-red-50" onclick="delObat('${m.id}')">${ic('trash','h-4 w-4')} Hapus</button>
+      </div>
+    </div>
+    <tr class="hidden sm:table-row">
+      <td data-label="Nama"><p class="font-bold text-slate-800">${m.nama_obat}</p><span class="badge bg-slate-100 text-slate-600 mt-1">${m.kategori||'Umum'}</span></td>
+      <td data-label="Stok Fisik" class="text-center"><span class="font-semibold text-slate-700">${m.stok_kotak}</span> <span class="text-xs text-slate-400">kotak</span>${m.sisa_satuan?` <span class="text-xs text-slate-500">+ ${m.sisa_satuan}</span>`:''}</td>
+      <td data-label="Total Satuan" class="text-center font-bold text-slate-800">${m.total_stok_satuan}</td>
+      <td data-label="Harga Jual" class="text-right font-semibold text-primary-700">${money(m.harga_jual_per_satuan)}</td>
+      <td data-label="Status" class="text-center">${low?'<span class="badge bg-red-50 text-red-600 border border-red-100">Menipis</span>':'<span class="badge bg-primary-50 text-primary-700 border border-primary-100">Aman</span>'}</td>
+      <td data-label="Aksi"><div class="flex justify-end gap-1">
+        <button class="p-2 rounded-lg hover:bg-blue-50 text-blue-600" onclick="openObat('${m.id}')">${ic('edit','h-4 w-4')}</button>
+        <button class="p-2 rounded-lg hover:bg-red-50 text-red-500" onclick="delObat('${m.id}')">${ic('trash','h-4 w-4')}</button>
       </div></td>
     </tr>`}).join('')
-    :`<tr><td colspan="6" class="text-center py-16 text-slate-400"><p class="font-medium">Tidak ada obat ditemukan</p></td></tr>`;
+    :`<div class="text-center py-16 text-slate-400"><p class="font-medium">Tidak ada obat ditemukan</p></div>`;
 }
 
 function openObat(id){
@@ -396,7 +441,7 @@ function openObat(id){
   const m=S.edit||{nama_obat:'',kategori:'',stok_kotak:0,sisa_satuan:0,isi_per_kotak:100,harga_beli_per_kotak:0,harga_jual_per_satuan:0,stok_minimal:20};
   $('#f_nama').value=m.nama_obat;$('#f_kategori').value=m.kategori||'';
   $('#f_kotak').value=m.stok_kotak;$('#f_sisa').value=m.sisa_satuan;$('#f_isi').value=m.isi_per_kotak;
-  $('#f_beli').value=m.harga_beli_per_kotak;$('#f_jual').value=m.harga_jual_per_satuan;$('#f_min').value=m.stok_minimal;
+  $('#f_beli').value=m.harga_beli_per_kotak;$('#f_jual').value=m.harga_jual_per_satuan;
   calcInfo();$('#modal-obat').classList.add('open');
 }
 function closeObat(){$('#modal-obat').classList.remove('open')}
@@ -404,9 +449,9 @@ function calcInfo(){
   const isi=N('f_isi')||1,beli=N('f_beli'),jual=N('f_jual'),tot=N('f_kotak')*isi+N('f_sisa');
   const modal=beli/isi;
   $('#info-calc').innerHTML=`
-    <div class="flex justify-between"><span>💰 Modal per satuan:</span> <b>${money(modal)}</b></div>
-    <div class="flex justify-between"><span>📦 Total stok satuan:</span> <b>${tot} butir</b></div>
-    <div class="flex justify-between border-t border-primary-200 pt-1.5 mt-1"><span>📈 Margin keuntungan:</span> <b class="text-primary-700">${money(jual-modal)} / satuan</b></div>`;
+    <div class="flex justify-between"><span>💰 Modal/satuan:</span> <b>${money(modal)}</b></div>
+    <div class="flex justify-between"><span>📦 Total stok:</span> <b>${tot} butir</b></div>
+    <div class="flex justify-between border-t border-primary-200 pt-1.5 mt-1"><span>📈 Margin:</span> <b class="text-primary-700">${money(jual-modal)} / satuan</b></div>`;
 }
 async function saveObat(){
   if(!V('f_nama'))return toast('Nama obat wajib diisi','error');
@@ -414,29 +459,28 @@ async function saveObat(){
   isi_per_kotak:N('f_isi')||1,harga_beli_per_kotak:N('f_beli'),harga_jual_per_satuan:N('f_jual'),stok_minimal:N('f_min')||10};
   const q=S.edit?db.from('medicines').update(p).eq('id',S.edit.id):db.from('medicines').insert([p]);
   const {error}=await q; if(error)return toast(error.message,'error');
-  toast(S.edit?'Data obat diperbarui':'Obat baru berhasil ditambahkan');closeObat();await loadMeds();renderInventaris();
+  toast(S.edit?'Data diperbarui':'Obat ditambahkan');closeObat();await loadMeds();renderInventaris();
 }
 async function delObat(id){
-  if(!confirm('Yakin ingin menghapus obat ini? Data tidak bisa dikembalikan.'))return;
+  if(!confirm('Yakin hapus obat ini?'))return;
   const {error}=await db.from('medicines').delete().eq('id',id);
-  if(error)return toast('Gagal: obat mungkin sudah memiliki riwayat transaksi','error');
-  toast('Obat berhasil dihapus');await loadMeds();renderInventaris();
+  if(error)return toast('Gagal: mungkin ada riwayat transaksi','error');
+  toast('Obat dihapus');await loadMeds();renderInventaris();
 }
 
 /* ================= KASIR (POS) ================= */
 function fillSelect(){
   const q=V('search-kasir').toLowerCase();
   const ok=S.meds.filter(m=>m.total_stok_satuan>0&&m.nama_obat.toLowerCase().includes(q));
-  $('#count-obat').textContent = ok.length + ' item ditemukan';
   
   $('#product-list').innerHTML=ok.length?ok.map(m=>`
-    <div class="flex items-center justify-between p-3.5 rounded-xl border border-slate-100 hover:border-primary-300 hover:bg-primary-50/30 transition-all cursor-pointer group" onclick="quickAdd('${m.id}')">
+    <div class="flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white active:scale-[0.98] transition-all cursor-pointer" onclick="quickAdd('${m.id}')">
       <div class="flex-1 min-w-0 pr-4">
-        <p class="font-bold text-slate-800 group-hover:text-primary-700 truncate">${m.nama_obat}</p>
+        <p class="font-bold text-slate-800 truncate">${m.nama_obat}</p>
         <p class="text-xs text-slate-500 mt-0.5">Stok: <span class="font-semibold text-slate-700">${m.total_stok_satuan}</span> • ${money(m.harga_jual_per_satuan)} <span class="text-[10px] text-slate-400">/sat</span></p>
       </div>
-      <button class="h-9 w-9 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-all shadow-sm">
-        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+      <button class="h-10 w-10 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center active:bg-primary-600 active:text-white transition-all shadow-sm">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
       </button>
     </div>`).join('')
     :'<div class="text-center py-12 text-slate-400"><p class="text-sm">Tidak ada obat dengan stok tersedia.</p></div>';
@@ -444,9 +488,11 @@ function fillSelect(){
 
 function renderKasir(){
   fillSelect();
-  $('#cart-count').textContent = S.cart.length;
+  const count = S.cart.length;
+  $('#cart-count').textContent = count;
+  $('#mobile-cart-count').textContent = count;
   
-  $('#keranjang').innerHTML=S.cart.length?S.cart.map(c=>`
+  const cartHTML = S.cart.length?S.cart.map(c=>`
     <div class="flex items-start justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
       <div class="flex-1 min-w-0 pr-2">
         <p class="font-bold text-sm text-slate-800 truncate">${c.med.nama_obat}</p>
@@ -454,62 +500,82 @@ function renderKasir(){
       </div>
       <div class="flex items-center gap-2">
         <div class="flex items-center bg-white rounded-lg border border-slate-200 shadow-sm">
-          <button class="px-2 py-1 text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-l-lg transition-colors" onclick="chQty('${c.med.id}',-1)">−</button>
+          <button class="px-3 py-1.5 text-slate-500 hover:text-red-500 active:bg-red-50 rounded-l-lg" onclick="chQty('${c.med.id}',-1)">−</button>
           <span class="w-8 text-center text-sm font-bold text-slate-800">${c.qty}</span>
-          <button class="px-2 py-1 text-slate-500 hover:text-primary-600 hover:bg-primary-50 rounded-r-lg transition-colors" onclick="chQty('${c.med.id}',1)">+</button>
+          <button class="px-3 py-1.5 text-slate-500 hover:text-primary-600 active:bg-primary-50 rounded-r-lg" onclick="chQty('${c.med.id}',1)">+</button>
         </div>
-        <button class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" onclick="rmItem('${c.med.id}')">
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-        </button>
+        <button class="p-2 text-slate-400 hover:text-red-500 active:bg-red-50 rounded-lg" onclick="rmItem('${c.med.id}')">${ic('trash','h-4 w-4')}</button>
       </div>
     </div>`).join('')
-    :'<div class="flex flex-col items-center justify-center h-full text-slate-400"><svg class="h-12 w-12 mb-2 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 4.5a1 1 0 00.9 1.5H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg><p class="text-sm font-medium">Keranjang masih kosong</p><p class="text-xs mt-1">Klik obat di sebelah kiri untuk menambah</p></div>';
+    :'<div class="flex flex-col items-center justify-center h-full text-slate-400 py-8"><svg class="h-12 w-12 mb-2 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 4.5a1 1 0 00.9 1.5H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg><p class="text-sm font-medium">Keranjang kosong</p></div>';
+
+  $('#keranjang').innerHTML = cartHTML;
+  $('#keranjang-mobile').innerHTML = cartHTML;
 
   const tot=S.cart.reduce((s,c)=>s+c.med.harga_jual_per_satuan*c.qty,0);
   $('#ringkasan').innerHTML=S.cart.length?S.cart.map(c=>`<div class="flex justify-between text-slate-600"><span class="truncate max-w-[160px]">${c.med.nama_obat} <span class="text-slate-400">x${c.qty}</span></span><span class="font-semibold text-slate-800">${money(c.med.harga_jual_per_satuan*c.qty)}</span></div>`).join(''):'<p class="text-center text-slate-400 text-sm py-4">Belum ada item</p>';
+  
   $('#total-harga').textContent=money(tot);
-  $('#btn-checkout').disabled=!S.cart.length;
+  $('#total-harga-mobile').textContent=money(tot);
+  $('#mobile-cart-total').textContent=money(tot);
+  
+  $('#btn-checkout').disabled=!count;
+  $('#btn-checkout-mobile').disabled=!count;
+  $('#mobile-cart-btn').style.display = count > 0 ? 'block' : 'none';
 }
 
-// Quick add from POS grid
 function quickAdd(id){
   const med=S.meds.find(m=>m.id===id);
   const ex=S.cart.find(c=>c.med.id===id);
   const total=1+(ex?ex.qty:0);
-  if(total>med.total_stok_satuan)return toast(`Stok tidak cukup! Sisa ${med.total_stok_satuan} satuan`,'warn');
+  if(total>med.total_stok_satuan)return toast(`Stok tidak cukup! Sisa ${med.total_stok_satuan}`,'warn');
   if(ex)ex.qty=total;else S.cart.push({med,qty:1});
-  renderKasir();toast(med.nama_obat+' ditambahkan');
+  renderKasir();
+  // Haptic feedback if available
+  if(navigator.vibrate) navigator.vibrate(10);
 }
 
 function chQty(id,d){
   const c=S.cart.find(x=>x.med.id===id);
   c.qty+=d;
   if(c.qty<=0)return rmItem(id);
-  if(c.qty>c.med.total_stok_satuan){c.qty-=d;return toast('Melebihi stok tersedia!','warn')}
+  if(c.qty>c.med.total_stok_satuan){c.qty-=d;return toast('Melebihi stok!','warn')}
   renderKasir();
 }
 function rmItem(id){S.cart=S.cart.filter(c=>c.med.id!==id);renderKasir()}
 
+function openMobileCart(){$('#modal-cart').classList.add('open')}
+function closeMobileCart(){$('#modal-cart').classList.remove('open')}
+
 async function checkout(){
   if(!S.cart.length)return;
-  const b=$('#btn-checkout');b.disabled=true;b.innerHTML=`<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+  const b=$('.btn-g'); // Target both checkout buttons
+  b.forEach(btn => {btn.disabled=true;btn.innerHTML=`<svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;});
   
   const {data:tx,error:e1}=await db.from('transactions').insert([{nama_pasien:V('p_nama')||null,catatan:V('p_catat')||null,total_harga:0}]).select().single();
-  if(e1){toast(e1.message,'error');b.disabled=false;b.innerHTML=`<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Proses & Bayar`;return}
+  if(e1){toast(e1.message,'error');resetCheckoutBtn();return}
   
   const items=S.cart.map(c=>({transaction_id:tx.id,medicine_id:c.med.id,jumlah_satuan:c.qty,harga_satuan:c.med.harga_jual_per_satuan}));
   const {error:e2}=await db.from('transaction_items').insert(items);
-  if(e2){await db.from('transactions').delete().eq('id',tx.id);toast(e2.message,'error');b.disabled=false;b.innerHTML=`<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Proses & Bayar`;return}
+  if(e2){await db.from('transactions').delete().eq('id',tx.id);toast(e2.message,'error');resetCheckoutBtn();return}
   
   const {data:full}=await db.from('transactions').select('total_harga,transaction_items(*,medicines:medicine_id(nama_obat))').eq('id',tx.id).single();
   $('#struk-body').innerHTML=full.transaction_items.map(i=>`<div class="flex justify-between"><span class="text-slate-600">${i.medicines.nama_obat} <span class="text-slate-400">x${i.jumlah_satuan}</span></span><b class="text-slate-800">${money(i.subtotal)}</b></div>`).join('');
   $('#struk-total').textContent=money(full.total_harga);
+  
+  closeMobileCart();
   $('#modal-struk').classList.add('open');
   
   S.cart=[];$('#p_nama').value='';$('#p_catat').value='';$('#search-kasir').value='';
-  await loadMeds();renderKasir();toast('Transaksi berhasil disimpan!');
-  b.disabled=false;b.innerHTML=`<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Proses & Bayar`;
+  await loadMeds();renderKasir();toast('Transaksi berhasil!');
+  resetCheckoutBtn();
 }
+
+function resetCheckoutBtn(){
+  const b=$('.btn-g');
+  b.forEach(btn => {btn.disabled=false;btn.innerHTML=`<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Proses & Bayar`;});
+}
+
 function closeStruk(){$('#modal-struk').classList.remove('open')}
 
 /* ================= RIWAYAT ================= */
@@ -517,25 +583,25 @@ async function renderRiwayat(){
   const {data,error}=await db.from('transactions').select('*, transaction_items(*,medicines:medicine_id(nama_obat))').order('tanggal_transaksi',{ascending:false}).limit(50);
   if(error)return toast(error.message,'error');
   const rows=data||[];const tot=rows.reduce((s,r)=>s+Number(r.total_harga),0);
-  $('#riv-stat').innerHTML=[['Total Transaksi',rows.length],['Total Nilai',money(tot)],['Rata-rata',money(rows.length?tot/rows.length:0)]]
-    .map(([t,v])=>`<div class="card p-5"><p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">${t}</p><p class="text-2xl font-extrabold text-slate-800">${v}</p></div>`).join('');
+  $('#riv-stat').innerHTML=[['Transaksi',rows.length],['Total',money(tot)],['Rata-rata',money(rows.length?tot/rows.length:0)]]
+    .map(([t,v])=>`<div class="card p-4 text-center"><p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">${t}</p><p class="text-lg font-extrabold text-slate-800">${v}</p></div>`).join('');
   
   $('#riv-list').innerHTML=rows.length?rows.map(r=>`
-    <div class="p-4 hover:bg-slate-50 transition-colors fade">
-      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+    <div class="card p-4 fade">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div>
           <p class="font-bold text-slate-800">${r.nama_pasien||'Pasien Umum'}</p>
-          <p class="text-xs text-slate-500 font-medium">${fd(r.tanggal_transaksi)} • ${ft(r.tanggal_transaksi)} ${r.catatan?'• <span class="text-primary-600">'+r.catatan+'</span>':''}</p>
+          <p class="text-xs text-slate-500 font-medium">${fd(r.tanggal_transaksi)} • ${ft(r.tanggal_transaksi)}</p>
         </div>
-        <span class="badge bg-slate-800 text-white font-bold px-3 py-1.5">${money(r.total_harga)}</span>
+        <span class="badge bg-slate-800 text-white font-bold px-3 py-1.5 text-sm">${money(r.total_harga)}</span>
       </div>
-      <div class="flex flex-wrap gap-1.5 mt-3">
+      ${r.catatan?`<p class="text-xs text-primary-600 bg-primary-50 px-3 py-1.5 rounded-lg mb-3 inline-block">📝 ${r.catatan}</p>`:''}
+      <div class="flex flex-wrap gap-1.5">
         ${r.transaction_items.map(i=>`<span class="badge bg-slate-100 text-slate-600 border border-slate-200 font-medium">${i.medicines?.nama_obat||'-'} <span class="text-slate-400">x${i.jumlah_satuan}</span></span>`).join('')}
       </div>
     </div>`).join(''):'<div class="text-center py-16 text-slate-400"><p class="font-medium">Belum ada riwayat transaksi.</p></div>';
 }
 
-// Jalankan aplikasi
 boot();
 </script>
 </body>
