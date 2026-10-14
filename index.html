@@ -3,141 +3,184 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MediKlinik · Manajemen Obat & Klinik</title>
+<title>PharmaPOS · Sistem Manajemen Apotek Profesional</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] },
+        colors: {
+          primary: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#064e3b' },
+          slate: { 850: '#151f32', 900: '#0f172a' }
+        }
+      }
+    }
+  }
+</script>
 <style>
-  html{font-family:Inter,system-ui,sans-serif}
-  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:transparent}
   ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
-  .card{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;box-shadow:0 1px 3px rgba(15,43,70,.07)}
-  .inp{width:100%;border:1px solid #e2e8f0;border-radius:.6rem;padding:.6rem .8rem;font-size:.875rem;background:#fff;outline:none;transition:.15s}
-  .inp:focus{border-color:#0891b2;box-shadow:0 0 0 3px rgba(8,145,178,.15)}
-  .lbl{display:block;font-size:.72rem;font-weight:700;color:#475569;margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.03em}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:.65rem;font-weight:600;font-size:.875rem;padding:.6rem 1rem;transition:.15s;cursor:pointer;border:none}
-  .btn-p{background:#0f2b46;color:#fff}.btn-p:hover{background:#153352}
-  .btn-c{background:#0891b2;color:#fff}.btn-c:hover{background:#0e7490}
+  ::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+  .card{background:#fff;border:1px solid #f1f5f9;border-radius:1rem;box-shadow:0 1px 3px rgba(15,23,42,.04)}
+  .inp{width:100%;border:1.5px solid #e2e8f0;border-radius:.75rem;padding:.65rem .9rem;font-size:.875rem;background:#fff;outline:none;transition:all .15s;font-weight:500}
+  .inp:focus{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.1)}
+  .lbl{display:block;font-size:.7rem;font-weight:700;color:#64748b;margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.05em}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:.75rem;font-weight:600;font-size:.875rem;padding:.65rem 1.1rem;transition:all .15s;cursor:pointer;border:none}
+  .btn:active{transform:scale(.97)}
+  .btn-p{background:#0f172a;color:#fff}.btn-p:hover{background:#1e293b}
+  .btn-c{background:#10b981;color:#fff}.btn-c:hover{background:#059669}
   .btn-g{background:#059669;color:#fff}.btn-g:hover{background:#047857}
-  .btn-o{background:#f1f5f9;color:#334155}.btn-o:hover{background:#e2e8f0}
-  .btn:disabled{opacity:.5;cursor:not-allowed}
-  .badge{display:inline-flex;align-items:center;border-radius:99px;padding:.18rem .6rem;font-size:.7rem;font-weight:700}
-  .fade{animation:fade .28s ease}
-  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .btn-o{background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0}.btn-o:hover{background:#f1f5f9;border-color:#cbd5e1}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .badge{display:inline-flex;align-items:center;border-radius:99px;padding:.2rem .65rem;font-size:.65rem;font-weight:700;letter-spacing:.02em}
+  .fade{animation:fade .25s cubic-bezier(0.16, 1, 0.3, 1)}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .page{display:none}.page.active{display:block}
-  .nav-btn{display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;border-radius:.7rem;font-size:.875rem;font-weight:500;color:#cbd5e1;transition:.15s;width:100%;text-align:left}
-  .nav-btn:hover{background:rgba(255,255,255,.07);color:#fff}
-  .nav-btn.active{background:rgba(6,182,212,.20);color:#67e8f9;box-shadow:inset 3px 0 0 #22d3ee}
-  table.tbl{width:100%;border-collapse:collapse;font-size:.875rem}
-  .tbl th{background:#f8fafc;text-align:left;padding:.7rem 1rem;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:#64748b;font-weight:800}
-  .tbl td{padding:.75rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
+  .nav-btn{display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;border-radius:.75rem;font-size:.875rem;font-weight:600;color:#94a3b8;transition:all .15s;width:100%;text-align:left}
+  .nav-btn:hover{background:rgba(255,255,255,.05);color:#e2e8f0}
+  .nav-btn.active{background:rgba(16,185,129,.15);color:#34d399;box-shadow:inset 3px 0 0 #10b981}
+  table.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:.875rem}
+  .tbl th{background:#f8fafc;text-align:left;padding:.85rem 1rem;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:#64748b;font-weight:700}
+  .tbl th:first-child{border-top-left-radius:.75rem;border-bottom-left-radius:.75rem}
+  .tbl th:last-child{border-top-right-radius:.75rem;border-bottom-right-radius:.75rem}
+  .tbl td{padding:.85rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
   .tbl tr:hover td{background:#f8fafc}
-  .modal-bg{position:fixed;inset:0;background:rgba(8,25,43,.55);backdrop-filter:blur(3px);z-index:60;display:none;align-items:center;justify-content:center;padding:1rem}
+  .modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(4px);z-index:60;display:none;align-items:center;justify-content:center;padding:1rem}
   .modal-bg.open{display:flex}
+  .receipt-line{border-top:2px dashed #e2e8f0;margin:1rem 0}
 </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-slate-50 text-slate-800 antialiased">
 
 <div id="toasts" class="fixed top-4 right-4 z-[100] space-y-2 w-[min(92vw,22rem)]"></div>
 
 <!-- ================= APP ================= -->
 <div id="app" class="hidden min-h-screen flex flex-col">
-  <div id="backdrop" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden" onclick="closeSide()"></div>
+  <div id="backdrop" class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden backdrop-blur-sm" onclick="closeSide()"></div>
 
-  <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 -translate-x-full lg:translate-x-0 transition-transform duration-200 bg-gradient-to-b from-[#0f2b46] to-[#12365a] text-white flex flex-col">
-    <div class="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-      <div class="h-10 w-10 rounded-xl bg-cyan-400 grid place-items-center" id="ico-side"></div>
-      <div><h1 class="font-extrabold leading-tight">MediKlinik</h1><p class="text-[11px] text-cyan-200">Manajemen Obat</p></div>
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 -translate-x-full lg:translate-x-0 transition-transform duration-300 bg-slate-900 text-white flex flex-col shadow-2xl">
+    <div class="flex items-center gap-3 border-b border-white/10 px-6 py-6">
+      <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 grid place-items-center shadow-lg shadow-primary-500/20">
+        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+      </div>
+      <div><h1 class="font-extrabold text-lg tracking-tight">PharmaPOS</h1><p class="text-[11px] text-slate-400 font-medium">Sistem Apotek Terpadu</p></div>
     </div>
     <nav id="nav" class="flex-1 space-y-1 px-3 py-4"></nav>
-    <div class="border-t border-white/10 p-3">
-      <div class="px-4 py-2 text-[10px] text-slate-400 text-center">v1.0 · Single User Mode</div>
+    <div class="border-t border-white/10 p-4">
+      <div class="bg-white/5 rounded-xl p-3 flex items-center gap-3">
+        <div class="h-9 w-9 rounded-full bg-primary-500/20 text-primary-400 grid place-items-center font-bold text-sm">A</div>
+        <div class="flex-1 min-w-0"><p class="text-sm font-semibold truncate">Admin Apotek</p><p class="text-[10px] text-slate-400">Online</p></div>
+      </div>
     </div>
   </aside>
 
   <div class="lg:pl-64 min-h-screen flex flex-col">
-    <header class="sticky top-0 z-30 h-16 bg-white/90 backdrop-blur border-b border-slate-200 flex items-center justify-between px-4 sm:px-6">
+    <header class="sticky top-0 z-30 h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 sm:px-6">
       <div class="flex items-center gap-3">
-        <button class="lg:hidden p-2 rounded-lg hover:bg-slate-100" onclick="toggleSide()" id="ico-menu"></button>
-        <div><h2 id="page-title" class="font-bold text-slate-800 leading-tight">Dashboard</h2><p id="page-sub" class="text-[11px] text-slate-500"></p></div>
+        <button class="lg:hidden p-2 rounded-lg hover:bg-slate-100 text-slate-600" onclick="toggleSide()">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div><h2 id="page-title" class="font-bold text-slate-800 text-lg leading-tight">Dashboard</h2><p id="page-sub" class="text-xs text-slate-500 font-medium"></p></div>
       </div>
       <div class="flex items-center gap-3">
-        <button class="relative p-2 rounded-full hover:bg-slate-100" id="ico-bell"><span id="bell-dot" class="hidden absolute right-1.5 top-1.5 h-2 w-2 bg-red-500 rounded-full"></span></button>
-        <div class="hidden sm:block text-right"><p class="text-sm font-semibold leading-tight">Klinik Sehat</p><p class="text-[10px] text-slate-500">Sistem Manajemen Obat</p></div>
+        <button class="relative p-2.5 rounded-full hover:bg-slate-100 text-slate-500 transition-colors">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <span id="bell-dot" class="hidden absolute right-2 top-2 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+        </button>
       </div>
     </header>
 
-    <main class="flex-1 p-4 sm:p-6">
+    <main class="flex-1 p-4 sm:p-6 lg:p-8">
       <!-- ===== DASHBOARD ===== -->
-      <section id="page-dashboard" class="page active space-y-5">
+      <section id="page-dashboard" class="page active space-y-6">
         <div id="stat-grid" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"></div>
-        <div class="grid gap-5 xl:grid-cols-2">
-          <div class="card p-5">
-            <h3 class="font-bold flex items-center gap-2" id="t-top"></h3>
-            <p class="text-xs text-slate-500 mb-4">Obat paling sering digunakan bulan ini</p>
-            <div style="height:210px"><canvas id="chart-top"></canvas></div>
-            <div id="top-list" class="mt-4 space-y-2"></div>
+        <div class="grid gap-6 xl:grid-cols-5">
+          <div class="card p-6 xl:col-span-3">
+            <div class="flex items-center justify-between mb-6">
+              <div><h3 class="font-bold text-slate-800 flex items-center gap-2"><svg class="h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>Top 5 Obat Terlaris</h3><p class="text-xs text-slate-500 mt-1">Berdasarkan jumlah satuan terjual bulan ini</p></div>
+            </div>
+            <div style="height:240px"><canvas id="chart-top"></canvas></div>
           </div>
-          <div class="card p-5">
-            <h3 class="font-bold flex items-center gap-2" id="t-stok"></h3>
+          <div class="card p-6 xl:col-span-2">
+            <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-1"><svg class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>Peringatan Stok</h3>
             <p class="text-xs text-slate-500 mb-4">Obat dengan stok di bawah batas minimal</p>
-            <div id="stok-alert" class="space-y-2"></div>
+            <div id="stok-alert" class="space-y-3 max-h-[240px] overflow-y-auto pr-2"></div>
           </div>
         </div>
       </section>
 
       <!-- ===== INVENTARIS ===== -->
-      <section id="page-inventaris" class="page space-y-4">
-        <div class="flex flex-wrap gap-3 items-center justify-between">
-          <input id="search-obat" class="inp sm:max-w-xs" placeholder="🔍  Cari nama obat..." oninput="renderInventaris()">
-          <button class="btn btn-p" onclick="openObat()"><span id="ico-plus1"></span> Tambah Obat</button>
+      <section id="page-inventaris" class="page space-y-5">
+        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div class="relative w-full sm:max-w-md">
+            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input id="search-obat" class="inp pl-10" placeholder="Cari nama obat atau kategori..." oninput="renderInventaris()">
+          </div>
+          <button class="btn btn-p w-full sm:w-auto" onclick="openObat()"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> Tambah Obat Baru</button>
         </div>
-        <div class="card overflow-hidden overflow-x-auto">
-          <table class="tbl"><thead><tr>
-            <th>Nama Obat</th><th>Kategori</th><th class="text-center">Kotak</th>
-            <th class="text-center">Total Satuan</th><th class="text-right">Harga Jual</th>
-            <th class="text-center">Status</th><th class="text-right">Aksi</th>
-          </tr></thead><tbody id="tbody-obat"></tbody></table>
+        <div class="card overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="tbl"><thead><tr>
+              <th>Nama Obat & Kategori</th><th class="text-center">Stok Fisik</th>
+              <th class="text-center">Total Satuan</th><th class="text-right">Harga Jual</th>
+              <th class="text-center">Status</th><th class="text-right">Aksi</th>
+            </tr></thead><tbody id="tbody-obat"></tbody></table>
+          </div>
         </div>
       </section>
 
-      <!-- ===== KASIR ===== -->
-      <section id="page-kasir" class="page">
-        <div class="grid gap-5 lg:grid-cols-3">
-          <div class="lg:col-span-2 space-y-5">
-            <div class="card p-5">
-              <h3 class="font-bold mb-3">Data Pasien</h3>
-              <div class="grid sm:grid-cols-2 gap-3">
-                <div><label class="lbl">Nama Pasien</label><input id="p_nama" class="inp" placeholder="Tn. Budi"></div>
-                <div><label class="lbl">Catatan / Diagnosa</label><input id="p_catat" class="inp" placeholder="Rawat jalan"></div>
+      <!-- ===== KASIR (POS LAYOUT) ===== -->
+      <section id="page-kasir" class="page h-[calc(100vh-8rem)]">
+        <div class="grid gap-6 h-full lg:grid-cols-12">
+          <!-- Left: Product Grid/List -->
+          <div class="lg:col-span-8 flex flex-col h-full">
+            <div class="card p-4 mb-4 flex-shrink-0">
+              <div class="grid sm:grid-cols-2 gap-3 mb-3">
+                <div><label class="lbl">Nama Pasien</label><input id="p_nama" class="inp" placeholder="Nama pasien / Umum"></div>
+                <div><label class="lbl">Catatan / Diagnosa</label><input id="p_catat" class="inp" placeholder="Contoh: Demam, Batuk"></div>
+              </div>
+              <div class="relative">
+                <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input id="search-kasir" class="inp pl-10" placeholder="Ketik nama obat untuk mencari..." oninput="fillSelect()">
               </div>
             </div>
-            <div class="card p-5">
-              <h3 class="font-bold mb-3">Tambah Obat</h3>
-              <input id="search-kasir" class="inp mb-3" placeholder="🔍  Cari obat untuk memfilter daftar..." oninput="fillSelect()">
-              <div class="grid sm:grid-cols-[1fr_auto_auto] gap-3 items-end">
-                <div><label class="lbl">Pilih Obat</label><select id="sel-obat" class="inp"></select></div>
-                <div><label class="lbl">Jumlah (satuan)</label><input id="in-jml" type="number" min="1" value="1" class="inp sm:w-28"></div>
-                <button class="btn btn-c" onclick="addToCart()"><span id="ico-plus2"></span> Tambah</button>
+            
+            <div class="card flex-1 overflow-hidden flex flex-col">
+              <div class="p-4 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
+                <h3 class="font-bold text-slate-800 text-sm">Daftar Obat Tersedia</h3>
+                <span class="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-md" id="count-obat">0 item</span>
               </div>
-            </div>
-            <div class="card p-5">
-              <h3 class="font-bold mb-3 flex items-center gap-2" id="t-keranjang"></h3>
-              <div id="keranjang"></div>
+              <div id="product-list" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
             </div>
           </div>
-          <div>
-            <div class="card sticky top-20 overflow-hidden">
-              <div class="bg-gradient-to-r from-[#0f2b46] to-[#1a5276] text-white px-5 py-4"><h3 class="font-bold">Ringkasan Transaksi</h3></div>
-              <div class="p-5 space-y-4">
-                <div id="ringkasan" class="space-y-2 text-sm"></div>
-                <div class="border-t pt-3 flex items-center justify-between">
-                  <span class="font-bold text-slate-700">TOTAL</span>
-                  <span id="total-harga" class="text-xl font-extrabold text-[#0891b2]">Rp0</span>
+
+          <!-- Right: Digital Receipt / Cart -->
+          <div class="lg:col-span-4 flex flex-col h-full">
+            <div class="card flex-1 flex flex-col overflow-hidden shadow-lg border-primary-100">
+              <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between flex-shrink-0">
+                <h3 class="font-bold flex items-center gap-2"><svg class="h-5 w-5 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 4.5a1 1 0 00.9 1.5H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>Keranjang Belanja</h3>
+                <span id="cart-count" class="bg-primary-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+              </div>
+              
+              <div id="keranjang" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+              
+              <div class="p-5 bg-slate-50 border-t border-slate-200 flex-shrink-0">
+                <div id="ringkasan" class="space-y-2 text-sm mb-4"></div>
+                <div class="receipt-line"></div>
+                <div class="flex items-center justify-between mb-4">
+                  <span class="font-bold text-slate-700 text-lg">Total Tagihan</span>
+                  <span id="total-harga" class="text-2xl font-extrabold text-primary-600">Rp0</span>
                 </div>
-                <button id="btn-checkout" class="btn btn-g w-full py-3" onclick="checkout()">✔ Proses Transaksi</button>
+                <button id="btn-checkout" class="btn btn-g w-full py-3.5 text-base shadow-lg shadow-primary-500/20" onclick="checkout()">
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  Proses & Bayar
+                </button>
               </div>
             </div>
           </div>
@@ -145,48 +188,64 @@
       </section>
 
       <!-- ===== RIWAYAT ===== -->
-      <section id="page-riwayat" class="page space-y-4">
+      <section id="page-riwayat" class="page space-y-5">
         <div class="grid sm:grid-cols-3 gap-4" id="riv-stat"></div>
-        <div id="riv-list" class="space-y-3"></div>
+        <div class="card overflow-hidden">
+          <div class="p-4 border-b border-slate-100"><h3 class="font-bold text-slate-800">Riwayat Transaksi Terakhir</h3></div>
+          <div id="riv-list" class="divide-y divide-slate-100 max-h-[600px] overflow-y-auto"></div>
+        </div>
       </section>
     </main>
   </div>
 </div>
 
 <!-- ===== MODAL OBAT ===== -->
-<div id="modal-obat" class="modal-bg"><div class="card w-full max-w-lg p-6 fade max-h-[92vh] overflow-y-auto">
-  <h3 id="mo-title" class="font-bold text-lg">Tambah Obat Baru</h3>
-  <p class="text-xs text-slate-500 mb-4">Data harga &amp; stok akan dihitung otomatis oleh database.</p>
-  <div class="grid gap-3">
-    <div><label class="lbl">Nama Obat</label><input id="f_nama" class="inp" placeholder="Paracetamol 500mg"></div>
-    <div><label class="lbl">Kategori</label><input id="f_kategori" class="inp" placeholder="Analgesik"></div>
-    <div class="grid grid-cols-3 gap-3">
-      <div><label class="lbl">Stok (Kotak)</label><input id="f_kotak" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
-      <div><label class="lbl">Eceran</label><input id="f_sisa" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
-      <div><label class="lbl">Isi / Kotak</label><input id="f_isi" type="number" min="1" value="100" class="inp" oninput="calcInfo()"></div>
+<div id="modal-obat" class="modal-bg"><div class="card w-full max-w-lg p-6 fade max-h-[92vh] overflow-y-auto shadow-2xl">
+  <div class="flex items-center justify-between mb-5">
+    <h3 id="mo-title" class="font-bold text-xl text-slate-800">Tambah Obat Baru</h3>
+    <button class="p-2 hover:bg-slate-100 rounded-full text-slate-400" onclick="closeObat()"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+  </div>
+  <div class="grid gap-4">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="col-span-2"><label class="lbl">Nama Obat</label><input id="f_nama" class="inp" placeholder="Contoh: Paracetamol 500mg"></div>
+      <div class="col-span-2"><label class="lbl">Kategori</label><input id="f_kategori" class="inp" placeholder="Contoh: Analgesik, Antibiotik"></div>
     </div>
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-3 gap-4">
+      <div><label class="lbl">Stok (Kotak)</label><input id="f_kotak" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
+      <div><label class="lbl">Eceran (Satuan)</label><input id="f_sisa" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
+      <div><label class="lbl">Isi per Kotak</label><input id="f_isi" type="number" min="1" value="100" class="inp" oninput="calcInfo()"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
       <div><label class="lbl">Harga Beli / Kotak</label><input id="f_beli" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
       <div><label class="lbl">Harga Jual / Satuan</label><input id="f_jual" type="number" min="0" value="0" class="inp" oninput="calcInfo()"></div>
     </div>
     <div><label class="lbl">Batas Stok Minimal (satuan)</label><input id="f_min" type="number" min="1" value="20" class="inp"></div>
-    <div id="info-calc" class="rounded-xl bg-sky-50 border border-sky-100 p-3 text-[13px] text-sky-800 space-y-1"></div>
+    
+    <div id="info-calc" class="rounded-xl bg-primary-50 border border-primary-100 p-4 text-sm text-primary-800 space-y-1.5"></div>
   </div>
-  <div class="flex justify-end gap-2 mt-5"><button class="btn btn-o" onclick="closeObat()">Batal</button><button class="btn btn-p" onclick="saveObat()">Simpan</button></div>
+  <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+    <button class="btn btn-o" onclick="closeObat()">Batal</button>
+    <button class="btn btn-p" onclick="saveObat()">Simpan Data</button>
+  </div>
 </div></div>
 
 <!-- ===== MODAL STRUK ===== -->
-<div id="modal-struk" class="modal-bg"><div class="card w-full max-w-sm p-6 fade">
-  <div class="text-center mb-4"><div class="mx-auto h-12 w-12 rounded-full bg-emerald-100 grid place-items-center text-emerald-600 text-xl">✔</div>
-  <h3 class="font-bold mt-2">Transaksi Berhasil</h3><p class="text-xs text-slate-500">Stok obat telah diperbarui otomatis.</p></div>
-  <div id="struk-body" class="text-sm space-y-1 border-y py-3"></div>
-  <div class="flex justify-between font-bold mt-3"><span>Total</span><span id="struk-total" class="text-[#0891b2]"></span></div>
-  <button class="btn btn-p w-full mt-5" onclick="closeStruk()">Tutup</button>
+<div id="modal-struk" class="modal-bg"><div class="card w-full max-w-sm p-0 fade shadow-2xl overflow-hidden">
+  <div class="bg-primary-600 text-white px-6 py-5 text-center">
+    <div class="mx-auto h-12 w-12 rounded-full bg-white/20 grid place-items-center mb-2"><svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
+    <h3 class="font-bold text-lg">Transaksi Berhasil</h3>
+    <p class="text-xs text-primary-100 mt-1">Stok obat telah diperbarui secara otomatis</p>
+  </div>
+  <div class="p-6">
+    <div id="struk-body" class="text-sm space-y-2"></div>
+    <div class="receipt-line"></div>
+    <div class="flex justify-between items-center"><span class="font-bold text-slate-700 text-lg">Total Bayar</span><span id="struk-total" class="text-xl font-extrabold text-primary-600"></span></div>
+    <button class="btn btn-p w-full mt-6 py-3" onclick="closeStruk()">Tutup & Transaksi Baru</button>
+  </div>
 </div></div>
 
 <script>
-/* ================= KONFIGURASI DATABASE (HARDCODED) ================= */
-// Jika Anda membuat project Supabase baru, ganti 2 nilai di bawah ini:
+/* ================= KONFIGURASI DATABASE ================= */
 const SUPABASE_URL = 'https://jnbtgryfrrvpxpfujwuo.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuYnRncnlmcnJ2cHhwZnVqd3VvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5MDY0OTcsImV4cCI6MjEwNzQ4MjQ5N30.8Gx4t5YG9Cnp_yOpyKhET-CgyhUzVC44AYQ39pnJxUU';
 
@@ -198,51 +257,48 @@ const money=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',ma
 const BL=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 const fd=d=>new Date(d).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
 const ft=d=>new Date(d).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-function toast(m,t='ok'){const e=document.createElement('div');e.className=`fade rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-xl ${t==='error'?'bg-red-600':t==='warn'?'bg-amber-500':'bg-emerald-600'}`;e.textContent=m;$('#toasts').appendChild(e);setTimeout(()=>{e.style.transition='.3s';e.style.opacity=0;setTimeout(()=>e.remove(),300)},2800)}
-const P={pill:'M10.5 13.5l3-3m-6.36 6.36a5 5 0 017.07-7.07l3.54 3.54a5 5 0 01-7.07 7.07l-3.54-3.54z',
-home:'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10',box:'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8',
-cart:'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 4.5a1 1 0 00.9 1.5H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
-clock:'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-bell:'M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9',
-menu:'M4 6h16M4 12h16M4 18h16',plus:'M12 4v16m8-8H4',trend:'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
-warn:'M12 9v2m0 4h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z',
-cash:'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z',
-trash:'M19 7l-.9 12.1A2 2 0 0116 21H8a2 2 0 01-2-1.9L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16',
-edit:'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.4-9.4a2 2 0 112.8 2.8L11 15l-4 1 1-4 9.6-9.6z'};
-const ic=(k,c='h-5 w-5')=>`<svg class="${c}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="${P[k]}"/></svg>`;
+
+function toast(m,t='ok'){
+  const colors = t==='error'?'bg-red-500':t==='warn'?'bg-amber-500':'bg-primary-600';
+  const icon = t==='error'?'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z':t==='warn'?'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z':'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z';
+  const e=document.createElement('div');
+  e.className=`fade flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-semibold text-white shadow-xl shadow-slate-200 ${colors}`;
+  e.innerHTML=`<svg class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="${icon}"/></svg><span>${m}</span>`;
+  $('#toasts').appendChild(e);
+  setTimeout(()=>{e.style.opacity=0;e.style.transform='translateY(-10px)';e.style.transition='all .3s';setTimeout(()=>e.remove(),300)},3000);
+}
+
+const P={
+  home:'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10',
+  box:'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
+  cart:'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 4.5a1 1 0 00.9 1.5H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
+  clock:'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+  plus:'M12 4v16m8-8H4',
+  trend:'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
+  warn:'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
+  cash:'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z',
+  trash:'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16',
+  edit:'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
+};
+const ic=(k,c='h-5 w-5')=>`<svg class="${c}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="${P[k]}"/></svg>`;
 
 /* ================= STATE & DB ================= */
 let db=null;
 const S={meds:[],cart:[],edit:null,chart:null};
-const NAV=[{k:'dashboard',t:'Dashboard',s:'Ringkasan klinik bulan ini',i:'home'},
-{k:'inventaris',t:'Inventaris Obat',s:'Kelola data & stok obat',i:'box'},
-{k:'kasir',t:'Kasir / Pengeluaran',s:'Catat obat untuk pasien',i:'cart'},
-{k:'riwayat',t:'Riwayat Transaksi',s:'Arsip penggunaan obat',i:'clock'}];
+const NAV=[{k:'dashboard',t:'Dashboard',s:'Ringkasan performa apotek bulan ini',i:'home'},
+{k:'inventaris',t:'Inventaris Obat',s:'Kelola data, harga, dan stok obat',i:'box'},
+{k:'kasir',t:'Kasir (POS)',s:'Catat penjualan dan pengeluaran obat',i:'cart'},
+{k:'riwayat',t:'Riwayat Transaksi',s:'Arsip dan laporan penggunaan obat',i:'clock'}];
 
 async function boot(){
-  // Setup icons
-  $('#ico-side').innerHTML=ic('pill','h-6 w-6');
-  $('#ico-menu').innerHTML=ic('menu');$('#ico-bell').insertAdjacentHTML('afterbegin',ic('bell'));
-  $('#ico-plus1').innerHTML=ic('plus','h-4 w-4');$('#ico-plus2').innerHTML=ic('plus','h-4 w-4');
-  $('#t-top').innerHTML=ic('trend','h-5 w-5 text-cyan-600')+'Top 5 Obat Terlaris';
-  $('#t-stok').innerHTML=ic('warn','h-5 w-5 text-amber-500')+'Peringatan Stok Menipis';
-  $('#t-keranjang').innerHTML=ic('cart','h-4 w-4 text-cyan-600')+'Keranjang Obat';
   $('#nav').innerHTML=NAV.map(n=>`<button class="nav-btn" data-k="${n.k}" onclick="go('${n.k}')">${ic(n.i,'h-5 w-5')}${n.t}</button>`).join('');
-
-  // Inisialisasi Supabase langsung (tanpa layar setup)
   db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-  // Test koneksi
   const {error} = await db.from('medicines').select('id').limit(1);
   if(error){
-    toast('Koneksi database gagal: '+error.message,'error');
-    document.body.innerHTML = `<div class="min-h-screen grid place-items-center p-4"><div class="text-center"><h1 class="text-xl font-bold text-red-600 mb-2">Koneksi Gagal</h1><p class="text-sm text-slate-600 mb-4">${error.message}</p><p class="text-xs text-slate-400">Pastikan SQL Schema sudah dijalankan di Supabase.</p></div></div>`;
+    document.body.innerHTML = `<div class="min-h-screen grid place-items-center p-4 bg-slate-50"><div class="card p-8 text-center max-w-md"><div class="mx-auto h-12 w-12 rounded-full bg-red-100 text-red-600 grid place-items-center mb-4"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h1 class="text-xl font-bold text-slate-800 mb-2">Koneksi Database Gagal</h1><p class="text-sm text-slate-500 mb-6">${error.message}</p><p class="text-xs text-slate-400 bg-slate-100 p-3 rounded-lg">Pastikan SQL Schema sudah dijalankan di Supabase dan URL/Key sudah benar.</p></div></div>`;
     return;
   }
-
-  // Masuk ke aplikasi
   $('#app').classList.remove('hidden');
-  $('#app').classList.add('block');
   await loadMeds();
   location.hash='#/dashboard';
   route();
@@ -288,48 +344,57 @@ async function renderDashboard(){
   const tipis=S.meds.filter(m=>m.total_stok_satuan<=m.stok_minimal).sort((x,y)=>x.total_stok_satuan-y.total_stok_satuan);
   $('#bell-dot').classList.toggle('hidden',tipis.length===0);
 
-  const card=(icn,ttl,val,sub,bg,fg)=>`<div class="card p-5 ${bg}"><div class="flex items-start justify-between"><div><p class="text-[11px] font-bold uppercase tracking-wide ${fg} opacity-80">${ttl}</p><p class="text-2xl font-extrabold mt-1 ${fg}">${val}</p><p class="text-[11px] mt-1 ${fg} opacity-70">${sub}</p></div><span class="${fg} opacity-70">${ic(icn,'h-6 w-6')}</span></div></div>`;
+  const statCard=(icon,ttl,val,sub,bgIcon,bgText,bgBorder)=>`
+    <div class="card p-5 flex items-start justify-between hover:shadow-md transition-shadow">
+      <div><p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">${ttl}</p><p class="text-2xl font-extrabold text-slate-800 mt-1">${val}</p><p class="text-xs text-slate-500 mt-2 font-medium">${sub}</p></div>
+      <div class="h-12 w-12 rounded-xl ${bgIcon} ${bgText} ${bgBorder} grid place-items-center flex-shrink-0">${ic(icon,'h-6 w-6')}</div>
+    </div>`;
+  
   $('#stat-grid').innerHTML=
-    card('cash','Omset Bulan Ini',money(omset),jml+' transaksi','!bg-gradient-to-br !from-[#0f2b46] !to-[#1a5276] !border-0','!text-white')+
-    card('cart','Jumlah Transaksi',jml,'bulan '+BL[now.getMonth()],'','')+
-    card('pill','Jenis Obat',S.meds.length,'terdaftar di inventaris','','')+
-    card('warn','Stok Menipis',tipis.length,'perlu segera restock','','');
+    statCard('cash','Omset Bulan Ini',money(omset),jml+' transaksi','bg-primary-50','text-primary-600','border border-primary-100')+
+    statCard('cart','Total Transaksi',jml,'bulan '+BL[now.getMonth()],'bg-blue-50','text-blue-600','border border-blue-100')+
+    statCard('box','Jenis Obat',S.meds.length,'terdaftar di inventaris','bg-purple-50','text-purple-600','border border-purple-100')+
+    statCard('warn','Stok Menipis',tipis.length,'perlu segera direstock','bg-amber-50','text-amber-600','border border-amber-100');
 
   if(S.chart)S.chart.destroy();
-  S.chart=new Chart($('#chart-top'),{type:'bar',data:{labels:top.map(t=>t.nama),datasets:[{data:top.map(t=>t.j),backgroundColor:'#0891b2',borderRadius:6}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#f1f5f9'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
-  $('#top-list').innerHTML=top.length?top.map((t,i)=>`<div class="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
-    <div class="flex items-center gap-2"><span class="badge bg-slate-200 text-slate-700">#${i+1}</span><span class="text-sm font-semibold">${t.nama}</span></div>
-    <div class="text-right"><p class="text-sm font-bold text-[#0f2b46]">${t.j} satuan</p><p class="text-[11px] text-slate-500">${money(t.p)}</p></div></div>`).join('')
-    :'<p class="text-sm text-slate-400 text-center py-6">Belum ada transaksi bulan ini.</p>';
-
-  $('#stok-alert').innerHTML=tipis.length?tipis.map(m=>`<div class="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-    <div><p class="text-sm font-bold">${m.nama_obat}</p><p class="text-[11px] text-slate-500">Batas minimal: ${m.stok_minimal} satuan</p></div>
-    <span class="badge bg-amber-500 text-white">Sisa ${m.total_stok_satuan}</span></div>`).join('')
-    :'<div class="text-center py-10 text-slate-400"><p class="text-3xl mb-1">✓</p><p class="text-sm">Semua stok aman</p></div>';
+  S.chart=new Chart($('#chart-top'),{type:'bar',data:{labels:top.map(t=>t.nama),datasets:[{data:top.map(t=>t.j),backgroundColor:'#10b981',borderRadius:6,barThickness:20}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#f1f5f9'},ticks:{font:{weight:'600'}}},y:{grid:{display:false},ticks:{font:{weight:'600',size:12}}}}}});
+  
+  $('#top-list') // Reused structure if needed, but chart is primary now
+  
+  $('#stok-alert').innerHTML=tipis.length?tipis.map(m=>`
+    <div class="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50/50 px-4 py-3">
+      <div><p class="text-sm font-bold text-slate-800">${m.nama_obat}</p><p class="text-[11px] text-slate-500 font-medium">Batas minimal: ${m.stok_minimal} satuan</p></div>
+      <span class="badge bg-amber-100 text-amber-700 border border-amber-200">Sisa ${m.total_stok_satuan}</span>
+    </div>`).join('')
+    :`<div class="text-center py-8 text-slate-400"><div class="mx-auto h-12 w-12 rounded-full bg-primary-50 text-primary-500 grid place-items-center mb-2"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><p class="text-sm font-semibold text-slate-600">Semua stok aman</p></div>`;
 }
 
 /* ================= INVENTARIS ================= */
 function renderInventaris(){
   const q=V('search-obat').toLowerCase();
-  const rows=S.meds.filter(m=>m.nama_obat.toLowerCase().includes(q));
+  const rows=S.meds.filter(m=>m.nama_obat.toLowerCase().includes(q) || (m.kategori||'').toLowerCase().includes(q));
   $('#tbody-obat').innerHTML=rows.length?rows.map(m=>{
     const low=m.total_stok_satuan<=m.stok_minimal;
-    return `<tr><td><p class="font-semibold">${m.nama_obat}</p><p class="text-[11px] text-slate-400">Beli ${money(m.harga_beli_per_kotak)}/kotak</p></td>
-    <td><span class="badge bg-slate-100 text-slate-600">${m.kategori||'-'}</span></td>
-    <td class="text-center">${m.stok_kotak}${m.sisa_satuan?` <span class="text-[11px] text-slate-400">+${m.sisa_satuan}</span>`:''}</td>
-    <td class="text-center font-bold">${m.total_stok_satuan}</td>
-    <td class="text-right font-semibold text-[#0f2b46]">${money(m.harga_jual_per_satuan)}</td>
-    <td class="text-center">${low?'<span class="badge bg-red-100 text-red-700">Menipis</span>':'<span class="badge bg-emerald-100 text-emerald-700">Aman</span>'}</td>
-    <td><div class="flex justify-end gap-1"><button class="p-2 rounded-lg hover:bg-slate-100 text-blue-600" onclick="openObat('${m.id}')">${ic('edit','h-4 w-4')}</button>
-    <button class="p-2 rounded-lg hover:bg-red-50 text-red-500" onclick="delObat('${m.id}')">${ic('trash','h-4 w-4')}</button></div></td></tr>`}).join('')
-    :`<tr><td colspan="7" class="text-center py-12 text-slate-400">Belum ada obat. Klik "Tambah Obat".</td></tr>`;
+    return `<tr>
+      <td><p class="font-bold text-slate-800">${m.nama_obat}</p><span class="badge bg-slate-100 text-slate-600 mt-1">${m.kategori||'Umum'}</span></td>
+      <td class="text-center"><span class="font-semibold text-slate-700">${m.stok_kotak}</span> <span class="text-xs text-slate-400">kotak</span>${m.sisa_satuan?` <span class="text-xs text-slate-500">+ ${m.sisa_satuan}</span>`:''}</td>
+      <td class="text-center font-bold text-slate-800">${m.total_stok_satuan}</td>
+      <td class="text-right font-semibold text-primary-700">${money(m.harga_jual_per_satuan)}</td>
+      <td class="text-center">${low?'<span class="badge bg-red-50 text-red-600 border border-red-100">Menipis</span>':'<span class="badge bg-primary-50 text-primary-700 border border-primary-100">Aman</span>'}</td>
+      <td><div class="flex justify-end gap-1">
+        <button class="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors" onclick="openObat('${m.id}')" title="Edit">${ic('edit','h-4 w-4')}</button>
+        <button class="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors" onclick="delObat('${m.id}')" title="Hapus">${ic('trash','h-4 w-4')}</button>
+      </div></td>
+    </tr>`}).join('')
+    :`<tr><td colspan="6" class="text-center py-16 text-slate-400"><p class="font-medium">Tidak ada obat ditemukan</p></td></tr>`;
 }
+
 function openObat(id){
   S.edit=id?S.meds.find(m=>m.id===id):null;
-  $('#mo-title').textContent=S.edit?'Edit Obat':'Tambah Obat Baru';
+  $('#mo-title').textContent=S.edit?'Edit Data Obat':'Tambah Obat Baru';
   const m=S.edit||{nama_obat:'',kategori:'',stok_kotak:0,sisa_satuan:0,isi_per_kotak:100,harga_beli_per_kotak:0,harga_jual_per_satuan:0,stok_minimal:20};
-  ['nama','kategori'].forEach(k=>$('#f_'+k).value=m[k==='nama'?'nama_obat':'kategori']||'');
+  $('#f_nama').value=m.nama_obat;$('#f_kategori').value=m.kategori||'';
   $('#f_kotak').value=m.stok_kotak;$('#f_sisa').value=m.sisa_satuan;$('#f_isi').value=m.isi_per_kotak;
   $('#f_beli').value=m.harga_beli_per_kotak;$('#f_jual').value=m.harga_jual_per_satuan;$('#f_min').value=m.stok_minimal;
   calcInfo();$('#modal-obat').classList.add('open');
@@ -338,7 +403,10 @@ function closeObat(){$('#modal-obat').classList.remove('open')}
 function calcInfo(){
   const isi=N('f_isi')||1,beli=N('f_beli'),jual=N('f_jual'),tot=N('f_kotak')*isi+N('f_sisa');
   const modal=beli/isi;
-  $('#info-calc').innerHTML=`💡 Modal per satuan: <b>${money(modal)}</b><br>📦 Total stok satuan: <b>${tot} butir</b><br>📈 Margin per satuan: <b>${money(jual-modal)}</b>`;
+  $('#info-calc').innerHTML=`
+    <div class="flex justify-between"><span>💰 Modal per satuan:</span> <b>${money(modal)}</b></div>
+    <div class="flex justify-between"><span>📦 Total stok satuan:</span> <b>${tot} butir</b></div>
+    <div class="flex justify-between border-t border-primary-200 pt-1.5 mt-1"><span>📈 Margin keuntungan:</span> <b class="text-primary-700">${money(jual-modal)} / satuan</b></div>`;
 }
 async function saveObat(){
   if(!V('f_nama'))return toast('Nama obat wajib diisi','error');
@@ -346,63 +414,101 @@ async function saveObat(){
   isi_per_kotak:N('f_isi')||1,harga_beli_per_kotak:N('f_beli'),harga_jual_per_satuan:N('f_jual'),stok_minimal:N('f_min')||10};
   const q=S.edit?db.from('medicines').update(p).eq('id',S.edit.id):db.from('medicines').insert([p]);
   const {error}=await q; if(error)return toast(error.message,'error');
-  toast(S.edit?'Obat diperbarui':'Obat ditambahkan');closeObat();await loadMeds();renderInventaris();
+  toast(S.edit?'Data obat diperbarui':'Obat baru berhasil ditambahkan');closeObat();await loadMeds();renderInventaris();
 }
 async function delObat(id){
-  if(!confirm('Hapus obat ini?'))return;
+  if(!confirm('Yakin ingin menghapus obat ini? Data tidak bisa dikembalikan.'))return;
   const {error}=await db.from('medicines').delete().eq('id',id);
-  if(error)return toast('Gagal: obat mungkin sudah dipakai transaksi','error');
-  toast('Obat dihapus');await loadMeds();renderInventaris();
+  if(error)return toast('Gagal: obat mungkin sudah memiliki riwayat transaksi','error');
+  toast('Obat berhasil dihapus');await loadMeds();renderInventaris();
 }
 
-/* ================= KASIR ================= */
+/* ================= KASIR (POS) ================= */
 function fillSelect(){
   const q=V('search-kasir').toLowerCase();
   const ok=S.meds.filter(m=>m.total_stok_satuan>0&&m.nama_obat.toLowerCase().includes(q));
-  $('#sel-obat').innerHTML=ok.length?ok.map(m=>`<option value="${m.id}">${m.nama_obat} — stok ${m.total_stok_satuan} (${money(m.harga_jual_per_satuan)}/sat.)</option>`).join('')
-  :'<option value="">— tidak ada obat —</option>';
+  $('#count-obat').textContent = ok.length + ' item ditemukan';
+  
+  $('#product-list').innerHTML=ok.length?ok.map(m=>`
+    <div class="flex items-center justify-between p-3.5 rounded-xl border border-slate-100 hover:border-primary-300 hover:bg-primary-50/30 transition-all cursor-pointer group" onclick="quickAdd('${m.id}')">
+      <div class="flex-1 min-w-0 pr-4">
+        <p class="font-bold text-slate-800 group-hover:text-primary-700 truncate">${m.nama_obat}</p>
+        <p class="text-xs text-slate-500 mt-0.5">Stok: <span class="font-semibold text-slate-700">${m.total_stok_satuan}</span> • ${money(m.harga_jual_per_satuan)} <span class="text-[10px] text-slate-400">/sat</span></p>
+      </div>
+      <button class="h-9 w-9 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-all shadow-sm">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+      </button>
+    </div>`).join('')
+    :'<div class="text-center py-12 text-slate-400"><p class="text-sm">Tidak ada obat dengan stok tersedia.</p></div>';
 }
+
 function renderKasir(){
   fillSelect();
-  $('#keranjang').innerHTML=S.cart.length?`<table class="tbl"><thead><tr><th>Obat</th><th class="text-center">Harga/Sat</th><th class="text-center">Jumlah</th><th class="text-right">Subtotal</th><th></th></tr></thead><tbody>${
-    S.cart.map(c=>`<tr><td><p class="font-semibold">${c.med.nama_obat}</p><p class="text-[11px] text-slate-400">Stok: ${c.med.total_stok_satuan}</p></td>
-    <td class="text-center">${money(c.med.harga_jual_per_satuan)}</td>
-    <td><div class="flex items-center justify-center gap-1"><button class="btn btn-o !p-1.5" onclick="chQty('${c.med.id}',-1)">−</button><span class="w-8 text-center font-bold">${c.qty}</span><button class="btn btn-o !p-1.5" onclick="chQty('${c.med.id}',1)">+</button></div></td>
-    <td class="text-right font-bold">${money(c.med.harga_jual_per_satuan*c.qty)}</td>
-    <td><button class="p-2 rounded-lg hover:bg-red-50 text-red-500" onclick="rmItem('${c.med.id}')">${ic('trash','h-4 w-4')}</button></td></tr>`).join('')}</tbody></table>`
-    :'<p class="text-sm text-slate-400 text-center py-8">Keranjang masih kosong.</p>';
+  $('#cart-count').textContent = S.cart.length;
+  
+  $('#keranjang').innerHTML=S.cart.length?S.cart.map(c=>`
+    <div class="flex items-start justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+      <div class="flex-1 min-w-0 pr-2">
+        <p class="font-bold text-sm text-slate-800 truncate">${c.med.nama_obat}</p>
+        <p class="text-xs text-slate-500 mt-0.5">${money(c.med.harga_jual_per_satuan)} x ${c.qty}</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="flex items-center bg-white rounded-lg border border-slate-200 shadow-sm">
+          <button class="px-2 py-1 text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-l-lg transition-colors" onclick="chQty('${c.med.id}',-1)">−</button>
+          <span class="w-8 text-center text-sm font-bold text-slate-800">${c.qty}</span>
+          <button class="px-2 py-1 text-slate-500 hover:text-primary-600 hover:bg-primary-50 rounded-r-lg transition-colors" onclick="chQty('${c.med.id}',1)">+</button>
+        </div>
+        <button class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" onclick="rmItem('${c.med.id}')">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
+      </div>
+    </div>`).join('')
+    :'<div class="flex flex-col items-center justify-center h-full text-slate-400"><svg class="h-12 w-12 mb-2 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 4.5a1 1 0 00.9 1.5H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg><p class="text-sm font-medium">Keranjang masih kosong</p><p class="text-xs mt-1">Klik obat di sebelah kiri untuk menambah</p></div>';
+
   const tot=S.cart.reduce((s,c)=>s+c.med.harga_jual_per_satuan*c.qty,0);
-  $('#ringkasan').innerHTML=S.cart.map(c=>`<div class="flex justify-between text-slate-600"><span class="truncate max-w-[150px]">${c.med.nama_obat} × ${c.qty}</span><b>${money(c.med.harga_jual_per_satuan*c.qty)}</b></div>`).join('')||'<p class="text-slate-400">—</p>';
+  $('#ringkasan').innerHTML=S.cart.length?S.cart.map(c=>`<div class="flex justify-between text-slate-600"><span class="truncate max-w-[160px]">${c.med.nama_obat} <span class="text-slate-400">x${c.qty}</span></span><span class="font-semibold text-slate-800">${money(c.med.harga_jual_per_satuan*c.qty)}</span></div>`).join(''):'<p class="text-center text-slate-400 text-sm py-4">Belum ada item</p>';
   $('#total-harga').textContent=money(tot);
   $('#btn-checkout').disabled=!S.cart.length;
 }
-function addToCart(){
-  const id=$('#sel-obat').value,qty=N('in-jml')||1;
-  if(!id)return toast('Pilih obat dulu','error');
+
+// Quick add from POS grid
+function quickAdd(id){
   const med=S.meds.find(m=>m.id===id);
   const ex=S.cart.find(c=>c.med.id===id);
-  const total=qty+(ex?ex.qty:0);
+  const total=1+(ex?ex.qty:0);
   if(total>med.total_stok_satuan)return toast(`Stok tidak cukup! Sisa ${med.total_stok_satuan} satuan`,'warn');
-  if(ex)ex.qty=total;else S.cart.push({med,qty});
-  $('#in-jml').value=1;renderKasir();toast(med.nama_obat+' ditambahkan');
+  if(ex)ex.qty=total;else S.cart.push({med,qty:1});
+  renderKasir();toast(med.nama_obat+' ditambahkan');
 }
-function chQty(id,d){const c=S.cart.find(x=>x.med.id===id);c.qty+=d;if(c.qty<=0)return rmItem(id);
-  if(c.qty>c.med.total_stok_satuan){c.qty-=d;return toast('Melebihi stok!','warn')}renderKasir()}
+
+function chQty(id,d){
+  const c=S.cart.find(x=>x.med.id===id);
+  c.qty+=d;
+  if(c.qty<=0)return rmItem(id);
+  if(c.qty>c.med.total_stok_satuan){c.qty-=d;return toast('Melebihi stok tersedia!','warn')}
+  renderKasir();
+}
 function rmItem(id){S.cart=S.cart.filter(c=>c.med.id!==id);renderKasir()}
+
 async function checkout(){
-  if(!S.cart.length)return;const b=$('#btn-checkout');b.disabled=true;b.textContent='Memproses...';
+  if(!S.cart.length)return;
+  const b=$('#btn-checkout');b.disabled=true;b.innerHTML=`<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+  
   const {data:tx,error:e1}=await db.from('transactions').insert([{nama_pasien:V('p_nama')||null,catatan:V('p_catat')||null,total_harga:0}]).select().single();
-  if(e1){toast(e1.message,'error');b.disabled=false;b.textContent='✔ Proses Transaksi';return}
+  if(e1){toast(e1.message,'error');b.disabled=false;b.innerHTML=`<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Proses & Bayar`;return}
+  
   const items=S.cart.map(c=>({transaction_id:tx.id,medicine_id:c.med.id,jumlah_satuan:c.qty,harga_satuan:c.med.harga_jual_per_satuan}));
   const {error:e2}=await db.from('transaction_items').insert(items);
-  if(e2){await db.from('transactions').delete().eq('id',tx.id);toast(e2.message,'error');b.disabled=false;b.textContent='✔ Proses Transaksi';return}
+  if(e2){await db.from('transactions').delete().eq('id',tx.id);toast(e2.message,'error');b.disabled=false;b.innerHTML=`<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Proses & Bayar`;return}
+  
   const {data:full}=await db.from('transactions').select('total_harga,transaction_items(*,medicines:medicine_id(nama_obat))').eq('id',tx.id).single();
-  $('#struk-body').innerHTML=full.transaction_items.map(i=>`<div class="flex justify-between"><span>${i.medicines.nama_obat} × ${i.jumlah_satuan}</span><b>${money(i.subtotal)}</b></div>`).join('');
+  $('#struk-body').innerHTML=full.transaction_items.map(i=>`<div class="flex justify-between"><span class="text-slate-600">${i.medicines.nama_obat} <span class="text-slate-400">x${i.jumlah_satuan}</span></span><b class="text-slate-800">${money(i.subtotal)}</b></div>`).join('');
   $('#struk-total').textContent=money(full.total_harga);
   $('#modal-struk').classList.add('open');
-  S.cart=[];$('#p_nama').value='';$('#p_catat').value='';
-  await loadMeds();renderKasir();toast('Transaksi tersimpan, stok diperbarui');
-  b.disabled=false;b.textContent='✔ Proses Transaksi';
+  
+  S.cart=[];$('#p_nama').value='';$('#p_catat').value='';$('#search-kasir').value='';
+  await loadMeds();renderKasir();toast('Transaksi berhasil disimpan!');
+  b.disabled=false;b.innerHTML=`<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Proses & Bayar`;
 }
 function closeStruk(){$('#modal-struk').classList.remove('open')}
 
@@ -412,13 +518,21 @@ async function renderRiwayat(){
   if(error)return toast(error.message,'error');
   const rows=data||[];const tot=rows.reduce((s,r)=>s+Number(r.total_harga),0);
   $('#riv-stat').innerHTML=[['Total Transaksi',rows.length],['Total Nilai',money(tot)],['Rata-rata',money(rows.length?tot/rows.length:0)]]
-    .map(([t,v])=>`<div class="card p-4"><p class="text-[11px] font-bold uppercase text-slate-500">${t}</p><p class="text-xl font-extrabold text-[#0f2b46]">${v}</p></div>`).join('');
-  $('#riv-list').innerHTML=rows.length?rows.map(r=>`<div class="card p-4 fade">
-    <div class="flex flex-wrap items-center justify-between gap-2">
-      <div><p class="font-bold">${r.nama_pasien||'Tanpa Nama'}</p><p class="text-[11px] text-slate-500">${fd(r.tanggal_transaksi)} • ${ft(r.tanggal_transaksi)} ${r.catatan?'• '+r.catatan:''}</p></div>
-      <span class="badge bg-[#0f2b46] text-white text-sm">${money(r.total_harga)}</span></div>
-    <div class="mt-2 flex flex-wrap gap-1">${r.transaction_items.map(i=>`<span class="badge bg-sky-50 text-sky-700 border border-sky-100">${i.medicines?.nama_obat||'-'} × ${i.jumlah_satuan}</span>`).join('')}</div>
-  </div>`).join(''):'<p class="text-center text-slate-400 py-10">Belum ada transaksi.</p>';
+    .map(([t,v])=>`<div class="card p-5"><p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">${t}</p><p class="text-2xl font-extrabold text-slate-800">${v}</p></div>`).join('');
+  
+  $('#riv-list').innerHTML=rows.length?rows.map(r=>`
+    <div class="p-4 hover:bg-slate-50 transition-colors fade">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <div>
+          <p class="font-bold text-slate-800">${r.nama_pasien||'Pasien Umum'}</p>
+          <p class="text-xs text-slate-500 font-medium">${fd(r.tanggal_transaksi)} • ${ft(r.tanggal_transaksi)} ${r.catatan?'• <span class="text-primary-600">'+r.catatan+'</span>':''}</p>
+        </div>
+        <span class="badge bg-slate-800 text-white font-bold px-3 py-1.5">${money(r.total_harga)}</span>
+      </div>
+      <div class="flex flex-wrap gap-1.5 mt-3">
+        ${r.transaction_items.map(i=>`<span class="badge bg-slate-100 text-slate-600 border border-slate-200 font-medium">${i.medicines?.nama_obat||'-'} <span class="text-slate-400">x${i.jumlah_satuan}</span></span>`).join('')}
+      </div>
+    </div>`).join(''):'<div class="text-center py-16 text-slate-400"><p class="font-medium">Belum ada riwayat transaksi.</p></div>';
 }
 
 // Jalankan aplikasi
