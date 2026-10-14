@@ -582,7 +582,7 @@ async function checkout(){
 }
 
 function resetCheckoutBtn(){
-  // PERBAIKAN: Gunakan $$ bukan $
+  // Gunakan $$ untuk mengambil SEMUA tombol, bukan hanya satu
   const btns = $$('.btn-g');
   btns.forEach(btn => {
     btn.disabled = false;
